@@ -1,8 +1,11 @@
+import { AuthProvider } from "./context/AuthContext";
+import Router from "./router";
+
 function App() {
   return (
-    <div>
-      <h1>Rad Final Coursework</h1>
-    </div>
+    <AuthProvider>
+      <Router />
+    </AuthProvider>
   );
 }
 
