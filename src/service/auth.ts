@@ -1,36 +1,30 @@
+import api from "./api";
+
+// register
 export const register = async (
   username: string,
   email: string,
   password: string,
 ) => {
-  const response = await fetch("/api/auth/register", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ username, email, password }),
+  const response = await api.post("/auth/register", {
+    username,
+    email,
+    password,
   });
-  return response.json();
+  return response.data;
 };
 
+// login
 export const login = async (username: string, password: string) => {
-  const response = await fetch("/api/auth/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ username, password }),
+  const response = await api.post("/auth/login", {
+    username,
+    password,
   });
-  return response.json();
+  return response.data;
 };
 
+// refresh token
 export const refreshTokenCall = async (refreshToken: string) => {
-  const response = await fetch("/api/auth/refresh", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ refreshToken }),
-  });
-  return response.json();
+  const response = await api.post("/auth/refresh", { refreshToken });
+  return response.data;
 };

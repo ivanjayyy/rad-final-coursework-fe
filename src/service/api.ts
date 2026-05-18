@@ -22,47 +22,53 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// response interceptor
 api.interceptors.response.use(
-  (response) =>  {
-    return response,
+  (response) => {
+    return response;
   },
   async (error: AxiosError) => {
-      const originalRequest: any = error.config;
+    // access token was expired
+    const originalRequest: any = error.config;
 
-      const isPublic = PUBLIC_ENDPOINTS.some((endpoint) =>
-        originalRequest.url?.includes(endpoint),
-      );
+    // public endpoints do not require access token
+    const isPublic = PUBLIC_ENDPOINTS.some((endpoint) =>
+      originalRequest.url?.includes(endpoint),
+    );
 
-      if (
-        error.response?.status === 401 && 
-        !isPublic && 
-        !originalRequest._retry
+    if (
+      error.response?.status === 401 &&
+      !isPublic &&
+      !originalRequest._retry
     ) {
-        originalRequest._retry = true;
-        try{
-            const refreshToken = localStorage.getItem("refreshToken") as string;
+      originalRequest._retry = true;
+      try {
+        const refreshToken = localStorage.getItem("refreshToken") as string;
 
-            if(!refreshToken){
-                throw new Error("Refresh token not found");
-            }
-
-            const response = await refreshTokenCall(refreshToken);
-            const newAccessToken = response.data.accessToken;
-
-            localStorage.setItem("accessToken", newAccessToken);
-            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-            return axios(originalRequest);
-        } catch(err) {
-            localStorage.removeItem("accessToken")
-            localStorage.removeItem("refreshToken")
-            window.location.href = "/login"
-            console.error(err)
-            return Promise.reject(error)
+        if (!refreshToken) {
+          throw new Error("Refresh token not found");
         }
+
+        // refresh token and try again
+        const response = await refreshTokenCall(refreshToken);
+        const newAccessToken = response.data.accessToken;
+
+        // update access token
+        localStorage.setItem("accessToken", newAccessToken);
+        originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+        return axios(originalRequest);
+      } catch (err) {
+        // redirect to login
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        window.location.href = "/login";
+        console.error(err);
+        return Promise.reject(error);
+      }
     }
-      
-      return Promise.reject(error);
-  }
+
+    return Promise.reject(error);
+  },
 );
 
 export default api;
