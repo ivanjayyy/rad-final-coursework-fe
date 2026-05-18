@@ -1,5 +1,9 @@
 function App() {
-  return <></>;
+  return (
+    <div>
+      <h1>Rad Final Coursework</h1>
+    </div>
+  );
 }
 
 export default App;
