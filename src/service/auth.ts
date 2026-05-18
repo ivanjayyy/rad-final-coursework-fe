@@ -23,6 +23,12 @@ export const login = async (username: string, password: string) => {
   return response.data;
 };
 
+// get my details
+export const getMyDetails = async () => {
+  const response = await api.get("/auth/me");
+  return response.data;
+};
+
 // refresh token
 export const refreshTokenCall = async (refreshToken: string) => {
   const response = await api.post("/auth/refresh", { refreshToken });
