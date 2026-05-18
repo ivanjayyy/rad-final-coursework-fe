@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getMyDetails, login } from "../service/auth";
+import { useAuth } from "../hooks/useAuth";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  // const { setUser } = useAuth();
+  const { setUser } = useAuth();
 
   const navigate = useNavigate();
 
@@ -22,9 +23,9 @@ const Login = () => {
         localStorage.setItem("accessToken", data.data.accessToken);
         localStorage.setItem("refreshToken", data.data.refreshToken);
 
-        // const responseData = await getMyDetails();
-        // const userData = responseData?.data;
-        // setUser(userData);
+        const responseData = await getMyDetails();
+        const userData = responseData?.data;
+        setUser(userData);
 
         alert("Login successful!");
         navigate("/home");

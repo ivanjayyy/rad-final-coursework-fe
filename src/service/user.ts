@@ -1,16 +1,12 @@
 import api from "./api";
 
-export const updateUser = async (
-  id: string,
-  username: string,
-  email: string,
-) => {
-  const response = await api.put(`/user/update/${id}`, { username, email });
+export const updateUser = async (username: string, email: string) => {
+  const response = await api.put("/user/update", { username, email });
   return response.data;
 };
 
-export const deleteUser = async (id: string) => {
-  const response = await api.delete(`/user/delete/${id}`);
+export const deleteUser = async () => {
+  const response = await api.delete("/user/delete");
   return response.data;
 };
 
