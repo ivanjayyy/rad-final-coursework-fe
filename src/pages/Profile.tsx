@@ -7,7 +7,6 @@ import { getMyDetails } from "../service/auth";
 const Profile = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [bio, setBio] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
 
