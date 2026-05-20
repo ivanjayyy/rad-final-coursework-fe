@@ -1,16 +1,20 @@
 import api from "./api";
 
-export const createPost = async (title: string, description: string, tags: string[]) => {
-    const response = await api.post("/post/create", { title, description, tags });
+export const createPost = async (data: any) => {
+    const response = await api.post("/post/create", data, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
     return response.data;
 };
 
-export const getAllPosts = async () => {
-    const response = await api.get("/post/all");
+export const getAllPosts = async (page: number, limit: number) => {
+    const response = await api.get(`/post/all?page=${page}&limit=${limit}`);
     return response.data;
 };
 
-export const getMyPosts = async () => {
-    const response = await api.get("/post/my");
+export const getMyPosts = async (page: number, limit: number) => {
+    const response = await api.get(`/post/my?page=${page}&limit=${limit}`);
     return response.data;
 };
