@@ -27,7 +27,7 @@ const Start = () => {
             community and real-time tech.
           </p>
           <div className="flex gap-4 justify-center">
-            <div className="px-8 py-4 bg-orange-500 rounded-full font-bold cursor-pointer hover:bg-orange-600 transition">
+            <div className="px-8 py-4 bg-orange-500 rounded-full font-bold cursor-pointer hover:bg-orange-600 transition" onClick={() => window.location.href = "/create"}>
               Report a Pet
             </div>
             <div className="px-8 py-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-full font-bold cursor-pointer hover:bg-white/20 transition">

@@ -9,6 +9,8 @@ const Login = lazy(() => import("../pages/Login"));
 const Profile = lazy(() => import("../pages/Profile"));
 const Start = lazy(() => import("../pages/Start"));
 const AddPost = lazy(() => import("../components/AddPost"));
+const Posts = lazy(() => import("../components/Posts"));
+const AddNewPost = lazy(() => import("../components/AddNewPost"));
 
 // router
 const Router = () => {
@@ -22,8 +24,8 @@ const Router = () => {
         }
       >
         <Routes>
-          <Route path="/" element={<Start />} />
-          <Route path="/create" element={<AddPost />} />
+          <Route path="/" element={<Home />} />
+          <Route path="/create" element={<AddNewPost />} />
           <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

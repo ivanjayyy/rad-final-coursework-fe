@@ -18,6 +18,7 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
+import { createPost } from "../service/post";
 let DefaultIcon = L.icon({
   iconUrl: icon,
   shadowUrl: iconShadow,
@@ -134,24 +135,29 @@ const AddPost: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData();
-    formData.append("postType", postType);
+    formData.append("status", postType);
     formData.append("petName", petName);
     formData.append("breed", breed);
     formData.append("color", color);
-    formData.append("locationName", location); // Text address string
+    formData.append("lastSeenLocation", location); // Text address string
     formData.append("latitude", geoCoordinates[0].toString());
     formData.append("longitude", geoCoordinates[1].toString());
-    formData.append("date", date);
+    formData.append("lastSeenDate", date);
     formData.append("reward", reward);
-    formData.append("phones", JSON.stringify(phones));
-    formData.append("emails", JSON.stringify(emails));
-    if (image) formData.append("petImage", image);
+    formData.append("contactPhone", JSON.stringify(phones));
+    formData.append("contactEmail", JSON.stringify(emails));
+    if (image) formData.append("image", image);
 
-    console.log("MERN Payload:", Object.fromEntries(formData));
-    alert("Post created successfully!");
+    // console.log("MERN Payload:", Object.fromEntries(formData));
+    try {
+      await createPost(formData);
+      alert("Post created successfully!");
+    } catch (error) {
+      console.error("Error creating post:", error);
+    }
   };
 
   return (
