@@ -1,198 +1,6 @@
-// import { useEffect, useState } from "react";
-// // import { useAuth } from "../hooks/useAuth";
-// import { getAllPosts } from "../service/post";
-
-// interface PetPost {
-//   _id: string;
-//   status: "LOST" | "FOUND";
-//   petName: string;
-//   breed: string;
-//   color: string;
-//   lastSeenLocation: string;
-//   lastSeenDate: string;
-//   reward?: string;
-//   contactPhone: string[] | string;
-//   contactEmail: string[] | string;
-//   imageURL?: string;
-// }
-
-// const PostPage = () => {
-//   const [posts, setPosts] = useState<PetPost[]>([]);
-//   const [page, setPage] = useState(1);
-//   const [totalPageCount, setTotalPageCount] = useState(0);
-
-//   const fetchData = async (pageNumber = 1) => {
-//     const res = await getAllPosts(pageNumber, 3);
-//     setPosts(res?.data || []);
-//     setPage(pageNumber);
-//     setTotalPageCount(res?.pagination.totalPages || 0);
-//   };
-
-//   useEffect(() => {
-//     fetchData();
-//   }, []);
-
-//   const parseContactList = (data: any): string[] => {
-//     if (!data) return [];
-//     if (Array.isArray(data)) return data;
-//     try {
-//       return JSON.parse(data);
-//     } catch {
-//       return [data.toString()];
-//     }
-//   };
-
-//   return (
-//     <div className="min-h-screen bg-gray-50 p-8 font-sans antialiased text-gray-900">
-//       {/* Posts Grid */}
-//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-7xl mx-auto">
-//         {posts.map((post: PetPost, index) => {
-//           const parsedPhones = parseContactList(post.contactPhone);
-//           const parsedEmails = parseContactList(post.contactEmail);
-
-//           return (
-//             <div
-//               key={post._id || index}
-//               className="bg-white border border-gray-200 rounded-lg overflow-hidden flex flex-col"
-//             >
-//               {/* Pet Image */}
-//               <div className="bg-gray-100 aspect-video w-full overflow-hidden border-b border-gray-100">
-//                 <img
-//                   src={
-//                     post?.imageURL ||
-//                     "https://via.placeholder.com/400x225?text=No+Image+Available"
-//                   }
-//                   alt={post?.petName || "Pet"}
-//                   className="w-full h-full object-cover"
-//                 />
-//               </div>
-
-//               {/* Post Data Content */}
-//               <div className="p-6 flex-1 flex flex-col justify-between space-y-6">
-//                 <div>
-//                   {/* Status Badge & Name */}
-//                   <div className="flex items-center justify-between mb-2">
-//                     <span
-//                       className={`text-xs font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded ${
-//                         post.status === "LOST"
-//                           ? "bg-red-50 text-red-700"
-//                           : "bg-green-50 text-green-700"
-//                       }`}
-//                     >
-//                       {post.status || "N/A"}
-//                     </span>
-//                     <span className="text-xs font-mono text-gray-400">
-//                       ID: {(post._id || index).toString().slice(-6)}
-//                     </span>
-//                   </div>
-
-//                   <h2 className="text-xl font-bold text-gray-900 mb-4 capitalize">
-//                     {post?.petName || "Unnamed Pet"}
-//                   </h2>
-
-//                   {/* Core Fields */}
-//                   <div className="space-y-2 text-sm">
-//                     <p>
-//                       <span className="text-gray-500">Breed:</span>{" "}
-//                       <span className="font-medium">
-//                         {post?.breed || "N/A"}
-//                       </span>
-//                     </p>
-//                     <p>
-//                       <span className="text-gray-500">Color:</span>{" "}
-//                       <span className="font-medium">
-//                         {post?.color || "N/A"}
-//                       </span>
-//                     </p>
-//                     <p>
-//                       <span className="text-gray-500">Last Seen:</span>{" "}
-//                       <span className="font-medium">
-//                         {post?.lastSeenLocation || "N/A"}
-//                       </span>
-//                     </p>
-//                     <p>
-//                       <span className="text-gray-500">Date:</span>{" "}
-//                       <span className="font-medium">
-//                         {post.lastSeenDate
-//                           ? new Date(post.lastSeenDate).toLocaleDateString()
-//                           : "N/A"}
-//                       </span>
-//                     </p>
-//                     <p>
-//                       <span className="text-gray-500">Reward:</span>{" "}
-//                       <span className="font-medium text-amber-600">
-//                         {post.reward ? `$${post.reward}` : "None"}
-//                       </span>
-//                     </p>
-//                   </div>
-//                 </div>
-
-//                 {/* Contact Sub-section */}
-//                 <div className="pt-4 border-t border-gray-100 text-xs space-y-2 text-gray-600">
-//                   <div className="font-semibold text-gray-900 uppercase tracking-wider text-[10px]">
-//                     Contact Information
-//                   </div>
-
-//                   {parsedPhones.length > 0 && (
-//                     <p>
-//                       Phone:{" "}
-//                       <span className="font-medium text-gray-900">
-//                         {parsedPhones.join(", ")}
-//                       </span>
-//                     </p>
-//                   )}
-
-//                   {parsedEmails.length > 0 && (
-//                     <p className="break-all">
-//                       Email:{" "}
-//                       <span className="font-medium text-gray-900">
-//                         {parsedEmails.join(", ")}
-//                       </span>
-//                     </p>
-//                   )}
-
-//                   {parsedPhones.length === 0 && parsedEmails.length === 0 && (
-//                     <p className="text-gray-400 italic">
-//                       No contact info provided.
-//                     </p>
-//                   )}
-//                 </div>
-//               </div>
-//             </div>
-//           );
-//         })}
-//       </div>
-
-//       {/* Simplified Pagination */}
-//       <div className="flex items-center justify-center gap-6 mt-12 text-sm">
-//         <button
-//           onClick={() => fetchData(page - 1)}
-//           disabled={page <= 1}
-//           className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-white transition"
-//         >
-//           Previous
-//         </button>
-//         <span className="text-gray-600">
-//           Page <strong className="text-gray-900">{page}</strong> of{" "}
-//           {totalPageCount}
-//         </span>
-//         <button
-//           onClick={() => fetchData(page + 1)}
-//           disabled={page >= totalPageCount}
-//           className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-40 disabled:hover:bg-white transition"
-//         >
-//           Next
-//         </button>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default PostPage;
-
 import { useEffect, useState } from "react";
 // import { useAuth } from "../hooks/useAuth";
-import { getAllPosts } from "../service/post";
+import { getAllPosts, addBookmark } from "../service/post";
 import AddPost from "./AddNewPost";
 
 interface PetPost {
@@ -428,6 +236,22 @@ const PostPage = () => {
   const [totalPageCount, setTotalPageCount] = useState(0);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PetPost | null>(null);
+  const [bookmarked, setBookmarked] = useState<Set<string>>(new Set());
+  const [bookmarking, setBookmarking] = useState<string | null>(null);
+
+  const handleBookmark = async (e: React.MouseEvent, postId: string) => {
+    e.stopPropagation();
+    if (bookmarking === postId) return;
+    setBookmarking(postId);
+    try {
+      await addBookmark(postId);
+      setBookmarked((prev) => new Set(prev).add(postId));
+    } catch (error) {
+      console.error("Failed to bookmark post:", error);
+    } finally {
+      setBookmarking(null);
+    }
+  };
 
   const fetchData = async (pageNumber = 1) => {
     const res = await getAllPosts(pageNumber, 3);
@@ -523,97 +347,149 @@ const PostPage = () => {
             const isLost = post.status === "LOST";
 
             return (
-              <button
-                key={post._id || index}
-                onClick={() => setSelectedPost(post)}
-                className="text-left bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-              >
-                {/* Pet Image */}
-                <div className="relative bg-gray-100 aspect-video w-full overflow-hidden">
-                  <img
-                    src={
-                      post.imageURL ||
-                      "https://via.placeholder.com/400x225?text=No+Image"
-                    }
-                    alt={post.petName || "Pet"}
-                    className="w-full h-full object-cover"
-                  />
-                  <span
-                    className={`absolute top-3 left-3 text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow-sm ${
-                      isLost
-                        ? "bg-red-500 text-white"
-                        : "bg-emerald-500 text-white"
+              <div key={post._id || index} className="group relative">
+                {/* Bookmark button — appears on hover */}
+                <button
+                  onClick={(e) => handleBookmark(e, post._id)}
+                  title={bookmarked.has(post._id) ? "Bookmarked" : "Save post"}
+                  className={`absolute top-2 right-2 z-10 p-2 rounded-full shadow-md border transition-all duration-150
+                    opacity-0 group-hover:opacity-100
+                    ${
+                      bookmarked.has(post._id)
+                        ? "bg-blue-600 border-blue-600 text-white"
+                        : "bg-white/90 border-gray-200 text-gray-500 hover:bg-blue-50 hover:text-blue-600 hover:border-blue-300"
                     }`}
-                  >
-                    {post.status || "N/A"}
-                  </span>
-                  {post.reward && (
-                    <span className="absolute top-3 right-3 text-xs font-bold bg-amber-400 text-amber-900 px-2.5 py-1 rounded-full shadow-sm">
-                      🏆 ${post.reward}
-                    </span>
-                  )}
-                </div>
-
-                {/* Compact Card Body — mandatory fields only */}
-                <div className="p-4 flex flex-col gap-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <h2 className="text-base font-bold text-gray-900 capitalize leading-tight truncate">
-                      {post.petName || "Unnamed Pet"}
-                    </h2>
-                    <span className="text-[10px] font-mono text-gray-400 shrink-0">
-                      #{(post._id || index).toString().slice(-6)}
-                    </span>
-                  </div>
-
-                  <p className="text-sm text-gray-500 truncate">
-                    <span className="font-medium text-gray-700">
-                      {post.breed || "Unknown breed"}
-                    </span>
-                    {post.color ? ` · ${post.color}` : ""}
-                  </p>
-
-                  <p className="text-xs text-gray-400 truncate flex items-center gap-1">
+                >
+                  {bookmarking === post._id ? (
                     <svg
+                      className="animate-spin h-4 w-4"
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-3 w-3 shrink-0"
                       fill="none"
                       viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8v8H4z"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-4 w-4"
+                      viewBox="0 0 24 24"
                       stroke="currentColor"
+                      strokeWidth={2}
+                      fill={bookmarked.has(post._id) ? "currentColor" : "none"}
                     >
                       <path
                         strokeLinecap="round"
                         strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                      />
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"
                       />
                     </svg>
-                    {post.lastSeenLocation || "Location unknown"}
-                  </p>
+                  )}
+                </button>
 
-                  <p className="text-xs text-gray-400">
-                    {post.lastSeenDate
-                      ? new Date(post.lastSeenDate).toLocaleDateString(
-                          "en-US",
-                          {
-                            month: "short",
-                            day: "numeric",
-                            year: "numeric",
-                          },
-                        )
-                      : "Date unknown"}
-                  </p>
+                <button
+                  onClick={() => setSelectedPost(post)}
+                  className="w-full text-left bg-white border border-gray-200 rounded-xl overflow-hidden flex flex-col shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                >
+                  {/* Pet Image */}
+                  <div className="relative bg-gray-100 aspect-video w-full overflow-hidden">
+                    <img
+                      src={
+                        post.imageURL ||
+                        "https://via.placeholder.com/400x225?text=No+Image"
+                      }
+                      alt={post.petName || "Pet"}
+                      className="w-full h-full object-cover"
+                    />
+                    <span
+                      className={`absolute top-3 left-3 text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full shadow-sm ${
+                        isLost
+                          ? "bg-red-500 text-white"
+                          : "bg-emerald-500 text-white"
+                      }`}
+                    >
+                      {post.status || "N/A"}
+                    </span>
+                    {post.reward && (
+                      <span className="absolute top-3 right-3 text-xs font-bold bg-amber-400 text-amber-900 px-2.5 py-1 rounded-full shadow-sm">
+                        🏆 ${post.reward}
+                      </span>
+                    )}
+                  </div>
 
-                  <p className="text-xs text-blue-500 font-medium mt-1">
-                    Tap for full details →
-                  </p>
-                </div>
-              </button>
+                  {/* Compact Card Body — mandatory fields only */}
+                  <div className="p-4 flex flex-col gap-2">
+                    <div className="flex items-center justify-between gap-2">
+                      <h2 className="text-base font-bold text-gray-900 capitalize leading-tight truncate">
+                        {post.petName || "Unnamed Pet"}
+                      </h2>
+                      <span className="text-[10px] font-mono text-gray-400 shrink-0">
+                        #{(post._id || index).toString().slice(-6)}
+                      </span>
+                    </div>
+
+                    <p className="text-sm text-gray-500 truncate">
+                      <span className="font-medium text-gray-700">
+                        {post.breed || "Unknown breed"}
+                      </span>
+                      {post.color ? ` · ${post.color}` : ""}
+                    </p>
+
+                    <p className="text-xs text-gray-400 truncate flex items-center gap-1">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-3 w-3 shrink-0"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                      {post.lastSeenLocation || "Location unknown"}
+                    </p>
+
+                    <p className="text-xs text-gray-400">
+                      {post.lastSeenDate
+                        ? new Date(post.lastSeenDate).toLocaleDateString(
+                            "en-US",
+                            {
+                              month: "short",
+                              day: "numeric",
+                              year: "numeric",
+                            },
+                          )
+                        : "Date unknown"}
+                    </p>
+
+                    <p className="text-xs text-blue-500 font-medium mt-1">
+                      Tap for full details →
+                    </p>
+                  </div>
+                </button>
+              </div>
             );
           })}
         </div>
