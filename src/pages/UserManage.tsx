@@ -336,7 +336,7 @@ const AdminUsersPage = () => {
   const fetchData = async (pageNumber = 1) => {
     setIsLoading(true);
     try {
-      const res = await getAllUsersAdmin(pageNumber, 10, search);
+      const res = await getAllUsersAdmin(pageNumber, 10);
       setUsers(res?.data || []);
       setPage(pageNumber);
       setTotalPageCount(res?.pagination.totalPages || 0);

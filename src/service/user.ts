@@ -21,11 +21,11 @@ export const getAllUsers = async () => {
 };
 
 export const sendEmailOtp = async (email: string) => {
-  const response = await api.post("/user/otp", { email });
+  const response = await api.post("/mail/send-otp", { email });
   return response.data;
 };
 
 export const verifyEmailOtp = async (email: string, otp: string) => {
-  const response = await api.post("/user/otp/verify", { email, otp });
+  const response = await api.post("/mail/verify-otp", { email, otp });
   return response.data;
 };

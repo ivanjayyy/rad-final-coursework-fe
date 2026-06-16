@@ -34,3 +34,18 @@ export const refreshTokenCall = async (refreshToken: string) => {
   const response = await api.post("/auth/refresh", { refreshToken });
   return response.data;
 };
+
+export const sendPasswordResetOtp = async (email: string) => {
+  const response = await api.post("/mail/send-otp", { email });
+  return response.data;
+};
+
+export const verifyPasswordResetOtp = async (email: string, otp: string) => {
+  const response = await api.post("/mail/verify-otp", { email, otp });
+  return response.data;
+};
+
+export const resetPassword = async (email: string, otp: string, newPassword: string) => {
+  const response = await api.post("/auth/reset-password", { email, otp, newPassword });
+  return response.data;
+};
