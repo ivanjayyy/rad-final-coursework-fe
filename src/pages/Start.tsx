@@ -151,14 +151,14 @@ const Start = () => {
   );
 };
 
-const StepCard = ({ icon, title, desc }) => (
+const StepCard = (props: { icon: React.ReactNode; title: string; desc: string }) => (
   <motion.div
     whileHover={{ y: -10 }}
     className="p-8 bg-white rounded-2xl border border-slate-100 shadow-lg text-center"
   >
-    <div className="mb-6 flex justify-center">{icon}</div>
-    <h4 className="text-xl font-bold mb-3">{title}</h4>
-    <p className="text-slate-500 text-sm leading-relaxed">{desc}</p>
+    <div className="mb-6 flex justify-center">{props.icon}</div>
+    <h4 className="text-xl font-bold mb-3">{props.title}</h4>
+    <p className="text-slate-500 text-sm leading-relaxed">{props.desc}</p>
   </motion.div>
 );
 
