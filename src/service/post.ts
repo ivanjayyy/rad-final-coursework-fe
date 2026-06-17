@@ -33,17 +33,19 @@ export const getMyPosts = async (page: number, limit: number) => {
   return response.data;
 };
 
-export const addBookmark = async (postId: string) => {
-  const response = await api.post(`/post/bookmark/${postId}`);
+export const addBookmark = async (id: string) => {
+  const response = await api.put(`/post/bookmark/${id}`);
   return response.data;
 };
 
-export const removeBookmark = async (postId: string) => {
-  const response = await api.delete(`/post/bookmark/${postId}`);
+export const removeBookmark = async (id: string) => {
+  const response = await api.put(`/post/unbookmark/${id}`);
   return response.data;
 };
 
 export const getBookmarkPosts = async (page: number, limit: number) => {
-  const response = await api.get(`/post/bookmarks?page=${page}&limit=${limit}`);
+  const response = await api.get(
+    `/post/bookmark-posts?page=${page}&limit=${limit}`,
+  );
   return response.data;
 };

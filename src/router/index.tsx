@@ -8,13 +8,13 @@ const Register = lazy(() => import("../pages/Register"));
 const Login = lazy(() => import("../pages/Login"));
 const Profile = lazy(() => import("../pages/Profile"));
 const Start = lazy(() => import("../pages/Start"));
-const AddPost = lazy(() => import("../components/AddPost"));
-const Posts = lazy(() => import("../components/Posts"));
+// const Posts = lazy(() => import("../components/Posts"));
 const AddNewPost = lazy(() => import("../components/AddNewPost"));
 const MyPosts = lazy(() => import("../components/MyPostsPage"));
 const BookmarksPage = lazy(() => import("../pages/BookmarkPosts"));
 const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
 const AdminPostsPage = lazy(() => import("../pages/AdminPosts"));
+const ForgotPassword = lazy(() => import("../pages/ForgetPassword"));
 
 // router
 const Router = () => {
@@ -28,7 +28,7 @@ const Router = () => {
         }
       >
         <Routes>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<Start />} />
           {/* <Route path="/create" element={<AddNewPost />} /> */}
           <Route path="/posts" element={<Home />} />
           <Route path="/login" element={<Login />} />
@@ -38,6 +38,7 @@ const Router = () => {
           <Route path="/bookmarks" element={<BookmarksPage />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/admin/posts" element={<AdminPostsPage />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
           {/* <Route path="/bookmarks" element={<Bookmarks />} />
           <Route path="/posts-manage" element={<PostsManage />} />
           <Route path="/user-manage" element={<UserManage />} />

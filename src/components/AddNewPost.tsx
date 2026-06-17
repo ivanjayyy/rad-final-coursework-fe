@@ -51,6 +51,12 @@
 //   address: AddressDetails;
 // }
 
+// const inputClass =
+//   "w-full px-3 py-2 text-sm border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition";
+
+// const labelClass =
+//   "block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1";
+
 // const AddPost: React.FC = () => {
 //   const [postType, setPostType] = useState<string>("LOST");
 //   const [petName, setPetName] = useState<string>("");
@@ -63,6 +69,7 @@
 //   const [imagePreview, setImagePreview] = useState<string | null>(null);
 //   const [phones, setPhones] = useState<string[]>([""]);
 //   const [emails, setEmails] = useState<string[]>([""]);
+//   const [isSubmitting, setIsSubmitting] = useState(false);
 
 //   const [suggestions, setSuggestions] = useState<NominatimResponse[]>([]);
 //   const [mapCoordinates, setMapCoordinates] = useState<[number, number]>([
@@ -72,25 +79,15 @@
 //   const buildThreePartAddressString = (data: NominatimResponse): string => {
 //     if (!data.address)
 //       return data.display_name.split(",").slice(0, 3).join(", ");
-
 //     const addr = data.address;
 //     const parts: string[] = [];
-
 //     const localPlace = addr.village || addr.town || addr.suburb || addr.city;
 //     if (localPlace) parts.push(localPlace);
-
-//     if (addr.county) {
-//       const cleanDistrict = addr.county.replace(/\sDistrict$/i, "");
-//       parts.push(cleanDistrict);
-//     }
-
+//     if (addr.county) parts.push(addr.county.replace(/\sDistrict$/i, ""));
 //     if (addr.country) parts.push(addr.country);
-
-//     if (parts.length > 0) {
-//       return parts.join(", ");
-//     }
-
-//     return data.display_name.split(",").slice(0, 3).join(", ");
+//     return parts.length > 0
+//       ? parts.join(", ")
+//       : data.display_name.split(",").slice(0, 3).join(", ");
 //   };
 
 //   const MapClickHandler = () => {
@@ -98,15 +95,12 @@
 //       async click(e: LeafletMouseEvent) {
 //         const { lat, lng } = e.latlng;
 //         setMapCoordinates([lat, lng]);
-
 //         try {
 //           const response = await fetch(
 //             `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=14&addressdetails=1`,
 //           );
 //           const data: NominatimResponse = await response.json();
-//           if (data) {
-//             setLocation(buildThreePartAddressString(data));
-//           }
+//           if (data) setLocation(buildThreePartAddressString(data));
 //         } catch (err) {
 //           console.error("Map click parsing failed:", err);
 //         }
@@ -120,7 +114,6 @@
 //       setSuggestions([]);
 //       return;
 //     }
-
 //     const wasOptionSelected = suggestions.some(
 //       (s) => buildThreePartAddressString(s) === location,
 //     );
@@ -129,9 +122,7 @@
 //     const delayDebounceFn = setTimeout(async () => {
 //       try {
 //         const response = await fetch(
-//           `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(
-//             location,
-//           )}`,
+//           `https://nominatim.openstreetmap.org/search?format=json&addressdetails=1&q=${encodeURIComponent(location)}`,
 //         );
 //         const data: NominatimResponse[] = await response.json();
 //         setSuggestions(data);
@@ -144,8 +135,7 @@
 //   }, [location]);
 
 //   const handleSelectLocation = (item: NominatimResponse) => {
-//     const cleanName = buildThreePartAddressString(item);
-//     setLocation(cleanName);
+//     setLocation(buildThreePartAddressString(item));
 //     setMapCoordinates([parseFloat(item.lat), parseFloat(item.lon)]);
 //     setSuggestions([]);
 //   };
@@ -155,10 +145,10 @@
 //     value: string,
 //     list: string[],
 //     setList: React.Dispatch<React.SetStateAction<string[]>>,
-//   ): void => {
-//     const updatedList = [...list];
-//     updatedList[index] = value;
-//     setList(updatedList);
+//   ) => {
+//     const updated = [...list];
+//     updated[index] = value;
+//     setList(updated);
 //   };
 
 //   const addListField = (
@@ -174,7 +164,7 @@
 //     if (list.length > 1) setList(list.filter((_, i) => i !== index));
 //   };
 
-//   const handleImageChange = (e: ChangeEvent<HTMLInputElement>): void => {
+//   const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
 //     if (e.target.files && e.target.files[0]) {
 //       const file = e.target.files[0];
 //       setImage(file);
@@ -184,8 +174,8 @@
 
 //   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
 //     e.preventDefault();
+//     setIsSubmitting(true);
 //     const formData = new FormData();
-
 //     formData.append("status", postType);
 //     formData.append("petName", petName);
 //     formData.append("breed", breed);
@@ -193,21 +183,12 @@
 //     formData.append("lastSeenLocation", location);
 //     formData.append("lastSeenDate", date);
 //     formData.append("reward", reward);
-
-//     phones.forEach((phone) => {
-//       const trimmedPhone = phone.trim();
-//       if (trimmedPhone) {
-//         formData.append("contactPhone", trimmedPhone);
-//       }
+//     phones.forEach((p) => {
+//       if (p.trim()) formData.append("contactPhone", p.trim());
 //     });
-
-//     emails.forEach((email) => {
-//       const trimmedEmail = email.trim().toLowerCase();
-//       if (trimmedEmail) {
-//         formData.append("contactEmail", trimmedEmail);
-//       }
+//     emails.forEach((em) => {
+//       if (em.trim()) formData.append("contactEmail", em.trim().toLowerCase());
 //     });
-
 //     if (image) formData.append("image", image);
 
 //     try {
@@ -215,260 +196,185 @@
 //       alert("Post created successfully!");
 //     } catch (error) {
 //       console.error("Error creating post:", error);
+//     } finally {
+//       setIsSubmitting(false);
 //     }
 //   };
 
 //   return (
-//     <div style={{ maxWidth: "650px", margin: "40px auto", padding: "0 20px" }}>
-//       <h2>Create Lost/Found Pet Post</h2>
-
-//       <form
-//         onSubmit={handleSubmit}
-//         style={{ display: "flex", flexDirection: "column", gap: "20px" }}
-//         autoComplete="off"
-//       >
-//         {/* Status Dropdown */}
-//         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-//           <label>Status</label>
-//           <select
-//             value={postType}
-//             onChange={(e: ChangeEvent<HTMLSelectElement>) =>
-//               setPostType(e.target.value)
-//             }
-//             style={{ width: "100%" }}
-//           >
-//             <option value="Lost">Lost</option>
-//             <option value="Found">Found</option>
-//           </select>
+//     <form
+//       onSubmit={handleSubmit}
+//       autoComplete="off"
+//       className="flex flex-col gap-6"
+//     >
+//       {/* Status Toggle */}
+//       <div>
+//         <label className={labelClass}>Post Type</label>
+//         <div className="flex rounded-md overflow-hidden border border-gray-300">
+//           {["LOST", "FOUND"].map((type) => (
+//             <button
+//               key={type}
+//               type="button"
+//               onClick={() => setPostType(type)}
+//               className={`flex-1 py-2 text-sm font-semibold transition-colors ${
+//                 postType === type
+//                   ? type === "LOST"
+//                     ? "bg-red-500 text-white"
+//                     : "bg-green-500 text-white"
+//                   : "bg-white text-gray-500 hover:bg-gray-50"
+//               }`}
+//             >
+//               {type}
+//             </button>
+//           ))}
 //         </div>
+//       </div>
 
-//         {/* Pet Core Details Grid Row */}
-//         <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
-//           <div
-//             style={{
-//               flex: "1",
-//               minWidth: "150px",
-//               display: "flex",
-//               flexDirection: "column",
-//               gap: "5px",
-//             }}
-//           >
-//             <label>Pet Name</label>
+//       {/* Pet Details */}
+//       <div>
+//         <p className={labelClass}>Pet Details</p>
+//         <div className="grid grid-cols-3 gap-3">
+//           <div>
+//             <label className="block text-xs text-gray-500 mb-1">Name</label>
 //             <input
 //               type="text"
 //               value={petName}
-//               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//                 setPetName(e.target.value)
-//               }
+//               onChange={(e) => setPetName(e.target.value)}
 //               placeholder="Buddy"
 //               required
-//               style={{ width: "100%" }}
+//               className={inputClass}
 //             />
 //           </div>
-//           <div
-//             style={{
-//               flex: "1",
-//               minWidth: "150px",
-//               display: "flex",
-//               flexDirection: "column",
-//               gap: "5px",
-//             }}
-//           >
-//             <label>Breed</label>
+//           <div>
+//             <label className="block text-xs text-gray-500 mb-1">Breed</label>
 //             <input
 //               type="text"
 //               value={breed}
-//               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//                 setBreed(e.target.value)
-//               }
+//               onChange={(e) => setBreed(e.target.value)}
 //               placeholder="Golden Retriever"
 //               required
-//               style={{ width: "100%" }}
+//               className={inputClass}
 //             />
 //           </div>
-//           <div
-//             style={{
-//               flex: "1",
-//               minWidth: "150px",
-//               display: "flex",
-//               flexDirection: "column",
-//               gap: "5px",
-//             }}
-//           >
-//             <label>Color</label>
+//           <div>
+//             <label className="block text-xs text-gray-500 mb-1">Color</label>
 //             <input
 //               type="text"
 //               value={color}
-//               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//                 setColor(e.target.value)
-//               }
-//               placeholder="Golden/White"
+//               onChange={(e) => setColor(e.target.value)}
+//               placeholder="Golden / White"
 //               required
-//               style={{ width: "100%" }}
+//               className={inputClass}
 //             />
 //           </div>
 //         </div>
+//       </div>
 
-//         {/* Map / Location Selection Blocks */}
-//         <div
-//           style={{
-//             display: "flex",
-//             flexDirection: "column",
-//             gap: "5px",
-//             position: "relative",
-//           }}
-//         >
-//           <label>Last Seen Location</label>
+//       {/* Location */}
+//       <div>
+//         <label className={labelClass}>Last Seen Location</label>
+//         <div className="relative">
 //           <input
 //             type="text"
 //             value={location}
-//             onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//               setLocation(e.target.value)
-//             }
+//             onChange={(e) => setLocation(e.target.value)}
 //             onKeyDown={(e) => {
 //               if (e.key === "Enter" && suggestions.length > 0) {
 //                 e.preventDefault();
 //                 handleSelectLocation(suggestions[0]);
 //               }
 //             }}
-//             placeholder="Type town or village, or click on map..."
+//             placeholder="Type a place, or click on the map…"
 //             required
-//             style={{ width: "100%" }}
+//             className={inputClass}
 //           />
-
-//           {/* Autocomplete Dropdown List */}
 //           {suggestions.length > 0 && (
-//             <ul
-//               style={{
-//                 position: "absolute",
-//                 zIndex: 50,
-//                 left: 0,
-//                 right: 0,
-//                 top: "60px",
-//                 background: "white",
-//                 border: "1px solid #ccc",
-//                 maxHeight: "200px",
-//                 overflowY: "auto",
-//                 margin: 0,
-//                 padding: "5px 0",
-//                 listStyle: "none",
-//               }}
-//             >
-//               {suggestions.map((item, index) => (
+//             <ul className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto text-sm">
+//               {suggestions.map((item, i) => (
 //                 <li
-//                   key={index}
+//                   key={i}
 //                   onClick={() => handleSelectLocation(item)}
-//                   style={{ padding: "8px 12px", cursor: "pointer" }}
+//                   className="px-3 py-2 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-0"
 //                 >
-//                   <strong>{buildThreePartAddressString(item)}</strong>
-//                   <small
-//                     style={{
-//                       display: "block",
-//                       color: "#666",
-//                       overflow: "hidden",
-//                       textOverflow: "ellipsis",
-//                       whiteSpace: "nowrap",
-//                     }}
-//                   >
+//                   <span className="font-medium text-gray-800">
+//                     {buildThreePartAddressString(item)}
+//                   </span>
+//                   <span className="block text-xs text-gray-400 truncate">
 //                     {item.display_name}
-//                   </small>
+//                   </span>
 //                 </li>
 //               ))}
 //             </ul>
 //           )}
-
-//           {/* Leaflet Frame Layout */}
-//           <div
-//             style={{
-//               width: "100%",
-//               height: "250px",
-//               marginTop: "10px",
-//               position: "relative",
-//               zIndex: 0,
-//             }}
-//           >
-//             <MapContainer
-//               center={mapCoordinates}
-//               zoom={13}
-//               style={{ height: "100%", width: "100%" }}
-//             >
-//               <TileLayer
-//                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-//                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-//               />
-//               <Marker position={mapCoordinates} />
-//               <MapClickHandler />
-//               <ChangeMapCenter center={mapCoordinates} />
-//             </MapContainer>
-//           </div>
 //         </div>
-
-//         {/* Date and Reward Row */}
-//         <div style={{ display: "flex", gap: "15px", flexWrap: "wrap" }}>
-//           <div
-//             style={{
-//               flex: "1",
-//               minWidth: "200px",
-//               display: "flex",
-//               flexDirection: "column",
-//               gap: "5px",
-//             }}
+//         <div
+//           className="mt-2 rounded-md overflow-hidden border border-gray-200"
+//           style={{ height: "220px", zIndex: 0, position: "relative" }}
+//         >
+//           <MapContainer
+//             center={mapCoordinates}
+//             zoom={13}
+//             style={{ height: "100%", width: "100%" }}
 //           >
-//             <label>Last Seen Date</label>
-//             <input
-//               type="date"
-//               value={date}
-//               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//                 setDate(e.target.value)
-//               }
-//               required
-//               style={{ width: "100%" }}
+//             <TileLayer
+//               attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+//               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
 //             />
-//           </div>
-//           <div
-//             style={{
-//               flex: "1",
-//               minWidth: "200px",
-//               display: "flex",
-//               flexDirection: "column",
-//               gap: "5px",
-//             }}
-//           >
-//             <label>Reward ($)</label>
-//             <input
-//               type="number"
-//               value={reward}
-//               onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//                 setReward(e.target.value)
-//               }
-//               placeholder="0"
-//               style={{ width: "100%" }}
-//             />
-//           </div>
+//             <Marker position={mapCoordinates} />
+//             <MapClickHandler />
+//             <ChangeMapCenter center={mapCoordinates} />
+//           </MapContainer>
 //         </div>
+//         <p className="text-xs text-gray-400 mt-1">
+//           Click the map to pin an exact location.
+//         </p>
+//       </div>
 
-//         {/* Contact Dynamic Phone Fields */}
-//         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-//           <label>Contact Phone(s)</label>
-//           {phones.map((phone, index) => (
-//             <div
-//               key={index}
-//               style={{ display: "flex", gap: "10px", width: "100%" }}
-//             >
+//       {/* Date & Reward */}
+//       <div className="grid grid-cols-2 gap-3">
+//         <div>
+//           <label className={labelClass}>Last Seen Date</label>
+//           <input
+//             type="date"
+//             value={date}
+//             onChange={(e) => setDate(e.target.value)}
+//             required
+//             className={inputClass}
+//           />
+//         </div>
+//         <div>
+//           <label className={labelClass}>Reward ($)</label>
+//           <input
+//             type="number"
+//             value={reward}
+//             onChange={(e) => setReward(e.target.value)}
+//             placeholder="0"
+//             className={inputClass}
+//           />
+//         </div>
+//       </div>
+
+//       {/* Phone Numbers */}
+//       <div>
+//         <label className={labelClass}>Contact Phone(s)</label>
+//         <div className="flex flex-col gap-2">
+//           {phones.map((phone, i) => (
+//             <div key={i} className="flex gap-2">
 //               <input
 //                 type="tel"
 //                 value={phone}
-//                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//                   handleListChange(index, e.target.value, phones, setPhones)
+//                 onChange={(e) =>
+//                   handleListChange(i, e.target.value, phones, setPhones)
 //                 }
-//                 placeholder={`Phone #${index + 1}`}
-//                 required={index === 0}
-//                 style={{ flex: "1" }}
+//                 placeholder={`Phone #${i + 1}`}
+//                 required={i === 0}
+//                 className={inputClass}
 //               />
 //               {phones.length > 1 && (
 //                 <button
 //                   type="button"
-//                   onClick={() => removeListField(index, phones, setPhones)}
+//                   onClick={() => removeListField(i, phones, setPhones)}
+//                   className="px-3 py-2 text-xs text-red-500 border border-red-200 rounded-md hover:bg-red-50 transition whitespace-nowrap"
 //                 >
 //                   Remove
 //                 </button>
@@ -478,34 +384,34 @@
 //           <button
 //             type="button"
 //             onClick={() => addListField(phones, setPhones)}
-//             style={{ alignSelf: "flex-start" }}
+//             className="self-start text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition"
 //           >
-//             + Add Another Phone
+//             <span className="text-base leading-none">+</span> Add Phone
 //           </button>
 //         </div>
+//       </div>
 
-//         {/* Contact Dynamic Email Fields */}
-//         <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-//           <label>Contact Email(s)</label>
-//           {emails.map((email, index) => (
-//             <div
-//               key={index}
-//               style={{ display: "flex", gap: "10px", width: "100%" }}
-//             >
+//       {/* Emails */}
+//       <div>
+//         <label className={labelClass}>Contact Email(s)</label>
+//         <div className="flex flex-col gap-2">
+//           {emails.map((email, i) => (
+//             <div key={i} className="flex gap-2">
 //               <input
 //                 type="email"
 //                 value={email}
-//                 onChange={(e: ChangeEvent<HTMLInputElement>) =>
-//                   handleListChange(index, e.target.value, emails, setEmails)
+//                 onChange={(e) =>
+//                   handleListChange(i, e.target.value, emails, setEmails)
 //                 }
-//                 placeholder={`Email #${index + 1}`}
-//                 required={index === 0}
-//                 style={{ flex: "1" }}
+//                 placeholder={`Email #${i + 1}`}
+//                 required={i === 0}
+//                 className={inputClass}
 //               />
 //               {emails.length > 1 && (
 //                 <button
 //                   type="button"
-//                   onClick={() => removeListField(index, emails, setEmails)}
+//                   onClick={() => removeListField(i, emails, setEmails)}
+//                   className="px-3 py-2 text-xs text-red-500 border border-red-200 rounded-md hover:bg-red-50 transition whitespace-nowrap"
 //                 >
 //                   Remove
 //                 </button>
@@ -515,46 +421,64 @@
 //           <button
 //             type="button"
 //             onClick={() => addListField(emails, setEmails)}
-//             style={{ alignSelf: "flex-start" }}
+//             className="self-start text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition"
 //           >
-//             + Add Another Email
+//             <span className="text-base leading-none">+</span> Add Email
 //           </button>
 //         </div>
+//       </div>
 
-//         {/* Image Input Selection Block */}
-//         <div style={{ display: "flex", flexDirection: "column", gap: "5px" }}>
-//           <label>Pet Image</label>
+//       {/* Image Upload */}
+//       <div>
+//         <label className={labelClass}>Pet Image</label>
+//         <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition">
+//           <svg
+//             xmlns="http://www.w3.org/2000/svg"
+//             className="h-6 w-6 text-gray-400 mb-1"
+//             fill="none"
+//             viewBox="0 0 24 24"
+//             stroke="currentColor"
+//           >
+//             <path
+//               strokeLinecap="round"
+//               strokeLinejoin="round"
+//               strokeWidth={1.5}
+//               d="M4 16l4-4m0 0l4 4m-4-4v8M4 8a4 4 0 014-4h8a4 4 0 014 4v1"
+//             />
+//           </svg>
+//           <span className="text-xs text-gray-500">
+//             {image ? image.name : "Click to upload a photo"}
+//           </span>
 //           <input
 //             type="file"
 //             accept="image/*"
 //             onChange={handleImageChange}
-//             style={{ width: "100%" }}
+//             className="hidden"
 //           />
-//           {imagePreview && (
-//             <div style={{ marginTop: "10px", width: "150px", height: "150px" }}>
-//               <img
-//                 src={imagePreview}
-//                 alt="Pet Preview"
-//                 style={{ width: "100%", height: "100%", objectFit: "cover" }}
-//               />
-//             </div>
-//           )}
-//         </div>
+//         </label>
+//         {imagePreview && (
+//           <div className="mt-3 flex items-center gap-3">
+//             <img
+//               src={imagePreview}
+//               alt="Preview"
+//               className="w-16 h-16 rounded-md object-cover border border-gray-200"
+//             />
+//             <span className="text-xs text-gray-500 truncate max-w-xs">
+//               {image?.name}
+//             </span>
+//           </div>
+//         )}
+//       </div>
 
-//         {/* Submit action block */}
-//         <button
-//           type="submit"
-//           style={{
-//             width: "100%",
-//             padding: "12px 0",
-//             marginTop: "10px",
-//             cursor: "pointer",
-//           }}
-//         >
-//           Publish Post
-//         </button>
-//       </form>
-//     </div>
+//       {/* Submit */}
+//       <button
+//         type="submit"
+//         disabled={isSubmitting}
+//         className="w-full py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-md transition-colors"
+//       >
+//         {isSubmitting ? "Publishing…" : "Publish Post"}
+//       </button>
+//     </form>
 //   );
 // };
 
@@ -613,11 +537,12 @@ interface NominatimResponse {
   address: AddressDetails;
 }
 
+// Comic Book Design System Tokens
 const inputClass =
-  "w-full px-3 py-2 text-sm border border-gray-300 rounded-md bg-white text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition";
+  "w-full px-3 py-2 text-sm font-bold border-4 border-black rounded-none bg-white text-black placeholder-gray-500 focus:outline-none focus:bg-yellow-50 focus:ring-0 transition shadow-[2px_2px_0px_0px_#000]";
 
 const labelClass =
-  "block text-xs font-semibold text-gray-600 uppercase tracking-wide mb-1";
+  "block text-xs font-black text-black uppercase tracking-wider mb-1 bg-yellow-300 border-2 border-black inline-block px-2 py-0.5 shadow-[2px_2px_0px_0px_#000]";
 
 const AddPost: React.FC = () => {
   const [postType, setPostType] = useState<string>("LOST");
@@ -755,7 +680,7 @@ const AddPost: React.FC = () => {
 
     try {
       await createPost(formData);
-      alert("Post created successfully!");
+      alert("POST PUBLISHED TO THE UNIVERSE!");
     } catch (error) {
       console.error("Error creating post:", error);
     } finally {
@@ -767,64 +692,74 @@ const AddPost: React.FC = () => {
     <form
       onSubmit={handleSubmit}
       autoComplete="off"
-      className="flex flex-col gap-6"
+      className="flex flex-col gap-6 p-6 bg-white border-4 border-black shadow-[8px_8px_0px_0px_#000]"
     >
       {/* Status Toggle */}
       <div>
-        <label className={labelClass}>Post Type</label>
-        <div className="flex rounded-md overflow-hidden border border-gray-300">
+        <div className="mb-2">
+          <label className={labelClass}>Post Status</label>
+        </div>
+        <div className="flex border-4 border-black shadow-[4px_4px_0px_0px_#000]">
           {["LOST", "FOUND"].map((type) => (
             <button
               key={type}
               type="button"
               onClick={() => setPostType(type)}
-              className={`flex-1 py-2 text-sm font-semibold transition-colors ${
+              className={`flex-1 py-3 text-base font-black tracking-widest uppercase transition-all ${
                 postType === type
                   ? type === "LOST"
-                    ? "bg-red-500 text-white"
-                    : "bg-green-500 text-white"
-                  : "bg-white text-gray-500 hover:bg-gray-50"
-              }`}
+                    ? "bg-red-500 text-white border-r-0 last:border-r-0"
+                    : "bg-green-500 text-white border-l-0 first:border-l-0"
+                  : "bg-white text-black hover:bg-yellow-100"
+              } ${type === "LOST" ? "border-r-4 border-black" : ""}`}
             >
-              {type}
+              {type === "LOST" ? "🚨 LOST" : "🔍 FOUND"}
             </button>
           ))}
         </div>
       </div>
 
-      {/* Pet Details */}
-      <div>
-        <p className={labelClass}>Pet Details</p>
-        <div className="grid grid-cols-3 gap-3">
+      {/* Pet Details Group Panel */}
+      <div className="border-4 border-black p-4 bg-sky-100 shadow-[4px_4px_0px_0px_#000] relative">
+        <span className="absolute -top-3 left-3 bg-black text-white text-xs font-black px-2 py-0.5 uppercase tracking-wider">
+          Pet Profile
+        </span>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-1">
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Name</label>
+            <label className="block text-xs font-black text-black mb-1 uppercase">
+              Name
+            </label>
             <input
               type="text"
               value={petName}
               onChange={(e) => setPetName(e.target.value)}
-              placeholder="Buddy"
+              placeholder="e.g. Buddy"
               required
               className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Breed</label>
+            <label className="block text-xs font-black text-black mb-1 uppercase">
+              Breed
+            </label>
             <input
               type="text"
               value={breed}
               onChange={(e) => setBreed(e.target.value)}
-              placeholder="Golden Retriever"
+              placeholder="e.g. Retriever"
               required
               className={inputClass}
             />
           </div>
           <div>
-            <label className="block text-xs text-gray-500 mb-1">Color</label>
+            <label className="block text-xs font-black text-black mb-1 uppercase">
+              Color
+            </label>
             <input
               type="text"
               value={color}
               onChange={(e) => setColor(e.target.value)}
-              placeholder="Golden / White"
+              placeholder="e.g. Golden / White"
               required
               className={inputClass}
             />
@@ -832,9 +767,11 @@ const AddPost: React.FC = () => {
         </div>
       </div>
 
-      {/* Location */}
+      {/* Location Section */}
       <div>
-        <label className={labelClass}>Last Seen Location</label>
+        <div className="mb-2">
+          <label className={labelClass}>Last Seen Location</label>
+        </div>
         <div className="relative">
           <input
             type="text"
@@ -846,22 +783,22 @@ const AddPost: React.FC = () => {
                 handleSelectLocation(suggestions[0]);
               }
             }}
-            placeholder="Type a place, or click on the map…"
+            placeholder="Type cross-streets, landmarks, or hit the map..."
             required
             className={inputClass}
           />
           {suggestions.length > 0 && (
-            <ul className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border border-gray-200 rounded-md shadow-lg max-h-48 overflow-y-auto text-sm">
+            <ul className="absolute z-50 left-0 right-0 top-full mt-1 bg-white border-4 border-black shadow-[4px_4px_0px_0px_#000] max-h-48 overflow-y-auto text-sm font-bold">
               {suggestions.map((item, i) => (
                 <li
                   key={i}
                   onClick={() => handleSelectLocation(item)}
-                  className="px-3 py-2 cursor-pointer hover:bg-blue-50 border-b border-gray-100 last:border-0"
+                  className="px-3 py-2 cursor-pointer bg-white hover:bg-yellow-200 border-b-2 border-black last:border-0 text-black"
                 >
-                  <span className="font-medium text-gray-800">
+                  <span className="font-black block">
                     {buildThreePartAddressString(item)}
                   </span>
-                  <span className="block text-xs text-gray-400 truncate">
+                  <span className="block text-xs text-gray-600 truncate font-normal">
                     {item.display_name}
                   </span>
                 </li>
@@ -869,9 +806,11 @@ const AddPost: React.FC = () => {
             </ul>
           )}
         </div>
+
+        {/* Map Canvas Frame */}
         <div
-          className="mt-2 rounded-md overflow-hidden border border-gray-200"
-          style={{ height: "220px", zIndex: 0, position: "relative" }}
+          className="mt-3 rounded-none border-4 border-black shadow-[4px_4px_0px_0px_#000]"
+          style={{ height: "240px", zIndex: 0, position: "relative" }}
         >
           <MapContainer
             center={mapCoordinates}
@@ -887,15 +826,18 @@ const AddPost: React.FC = () => {
             <ChangeMapCenter center={mapCoordinates} />
           </MapContainer>
         </div>
-        <p className="text-xs text-gray-400 mt-1">
-          Click the map to pin an exact location.
+        <p className="text-xs font-bold text-gray-700 mt-1 italic">
+          💥 Click directly inside the radar grid map above to pin exact
+          coordinates.
         </p>
       </div>
 
       {/* Date & Reward */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClass}>Last Seen Date</label>
+          <div className="mb-1">
+            <label className={labelClass}>Last Seen Date</label>
+          </div>
           <input
             type="date"
             value={date}
@@ -905,7 +847,9 @@ const AddPost: React.FC = () => {
           />
         </div>
         <div>
-          <label className={labelClass}>Reward ($)</label>
+          <div className="mb-1">
+            <label className={labelClass}>Bounty Reward ($)</label>
+          </div>
           <input
             type="number"
             value={reward}
@@ -918,7 +862,9 @@ const AddPost: React.FC = () => {
 
       {/* Phone Numbers */}
       <div>
-        <label className={labelClass}>Contact Phone(s)</label>
+        <div className="mb-1">
+          <label className={labelClass}>Hotline Phone(s)</label>
+        </div>
         <div className="flex flex-col gap-2">
           {phones.map((phone, i) => (
             <div key={i} className="flex gap-2">
@@ -928,7 +874,7 @@ const AddPost: React.FC = () => {
                 onChange={(e) =>
                   handleListChange(i, e.target.value, phones, setPhones)
                 }
-                placeholder={`Phone #${i + 1}`}
+                placeholder={`Line #${i + 1}`}
                 required={i === 0}
                 className={inputClass}
               />
@@ -936,9 +882,9 @@ const AddPost: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => removeListField(i, phones, setPhones)}
-                  className="px-3 py-2 text-xs text-red-500 border border-red-200 rounded-md hover:bg-red-50 transition whitespace-nowrap"
+                  className="px-3 py-1 font-black text-xs text-white bg-red-500 border-2 border-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000] hover:bg-red-600 active:translate-y-0.5 active:shadow-none transition-all"
                 >
-                  Remove
+                  Drop
                 </button>
               )}
             </div>
@@ -946,16 +892,18 @@ const AddPost: React.FC = () => {
           <button
             type="button"
             onClick={() => addListField(phones, setPhones)}
-            className="self-start text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition"
+            className="self-start text-xs text-black hover:text-blue-600 font-black flex items-center gap-1 uppercase tracking-wider underline decor-2 decoration-black"
           >
-            <span className="text-base leading-none">+</span> Add Phone
+            ➕ Add Alternate Line
           </button>
         </div>
       </div>
 
       {/* Emails */}
       <div>
-        <label className={labelClass}>Contact Email(s)</label>
+        <div className="mb-1">
+          <label className={labelClass}>Secure Email(s)</label>
+        </div>
         <div className="flex flex-col gap-2">
           {emails.map((email, i) => (
             <div key={i} className="flex gap-2">
@@ -965,7 +913,7 @@ const AddPost: React.FC = () => {
                 onChange={(e) =>
                   handleListChange(i, e.target.value, emails, setEmails)
                 }
-                placeholder={`Email #${i + 1}`}
+                placeholder={`Inbound Dispatch #${i + 1}`}
                 required={i === 0}
                 className={inputClass}
               />
@@ -973,9 +921,9 @@ const AddPost: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => removeListField(i, emails, setEmails)}
-                  className="px-3 py-2 text-xs text-red-500 border border-red-200 rounded-md hover:bg-red-50 transition whitespace-nowrap"
+                  className="px-3 py-1 font-black text-xs text-white bg-red-500 border-2 border-black uppercase tracking-wider shadow-[2px_2px_0px_0px_#000] hover:bg-red-600 active:translate-y-0.5 active:shadow-none transition-all"
                 >
-                  Remove
+                  Drop
                 </button>
               )}
             </div>
@@ -983,20 +931,22 @@ const AddPost: React.FC = () => {
           <button
             type="button"
             onClick={() => addListField(emails, setEmails)}
-            className="self-start text-xs text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1 transition"
+            className="self-start text-xs text-black hover:text-blue-600 font-black flex items-center gap-1 uppercase tracking-wider underline decor-2 decoration-black"
           >
-            <span className="text-base leading-none">+</span> Add Email
+            ➕ Add Alternate Dispatch
           </button>
         </div>
       </div>
 
-      {/* Image Upload */}
+      {/* Image Upload Box */}
       <div>
-        <label className={labelClass}>Pet Image</label>
-        <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-gray-300 rounded-md cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition">
+        <div className="mb-1">
+          <label className={labelClass}>Visual Evidence File</label>
+        </div>
+        <label className="flex flex-col items-center justify-center w-full h-32 border-4 border-dashed border-black rounded-none cursor-pointer bg-amber-50 hover:bg-yellow-100 transition shadow-[4px_4px_0px_0px_#000]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 text-gray-400 mb-1"
+            className="h-8 w-8 text-black mb-1 stroke-[2.5]"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -1004,12 +954,13 @@ const AddPost: React.FC = () => {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={1.5}
               d="M4 16l4-4m0 0l4 4m-4-4v8M4 8a4 4 0 014-4h8a4 4 0 014 4v1"
             />
           </svg>
-          <span className="text-xs text-gray-500">
-            {image ? image.name : "Click to upload a photo"}
+          <span className="text-xs font-black uppercase text-black tracking-wider px-4 text-center">
+            {image
+              ? `Selected: ${image.name}`
+              : "💥 CLICK TO IMPORT TRANSMISSION PHOTO"}
           </span>
           <input
             type="file"
@@ -1018,27 +969,31 @@ const AddPost: React.FC = () => {
             className="hidden"
           />
         </label>
+
         {imagePreview && (
-          <div className="mt-3 flex items-center gap-3">
+          <div className="mt-4 p-2 bg-yellow-200 border-4 border-black shadow-[4px_4px_0px_0px_#000] inline-flex items-center gap-4">
             <img
               src={imagePreview}
-              alt="Preview"
-              className="w-16 h-16 rounded-md object-cover border border-gray-200"
+              alt="Evidence Target View"
+              className="w-20 h-20 rounded-none object-cover border-2 border-black"
             />
-            <span className="text-xs text-gray-500 truncate max-w-xs">
-              {image?.name}
-            </span>
+            <div className="text-xs font-black text-black uppercase tracking-tight max-w-xs">
+              <p className="text-amber-800">Target Image Cached</p>
+              <p className="truncate font-mono">{image?.name}</p>
+            </div>
           </div>
         )}
       </div>
 
-      {/* Submit */}
+      {/* Main Submit Action */}
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full py-3 bg-blue-600 hover:bg-blue-700 active:bg-blue-800 disabled:opacity-60 disabled:cursor-not-allowed text-white text-sm font-semibold rounded-md transition-colors"
+        className="w-full py-4 bg-yellow-400 text-black border-4 border-black text-base font-black uppercase tracking-widest rounded-none shadow-[6px_6px_0px_0px_#000] hover:bg-yellow-300 hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_0px_#000] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
       >
-        {isSubmitting ? "Publishing…" : "Publish Post"}
+        {isSubmitting
+          ? "⚡ COMMITTING FLASH TRANSMISSION..."
+          : "📣 BROADCAST POST"}
       </button>
     </form>
   );
