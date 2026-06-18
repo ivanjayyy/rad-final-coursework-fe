@@ -1236,7 +1236,7 @@
 // export default AdminDashboard;
 
 import React, { useEffect, useState } from "react";
-import { allUsers, sendEmail } from "../service/admin"; // Using your predefined service hooks
+import { allUsers } from "../service/admin"; // Using your predefined service hooks
 
 interface DashboardSummary {
   totalUsers: number;
