@@ -32,7 +32,7 @@ const Profile = () => {
 
         if (u.roles.includes("ADMIN")) {
           setRole("ADMIN");
-        } else if (u.roles.includes("MOD")) {
+        } else if (u.roles.includes("MODERATOR")) {
           setRole("MOD");
         } else if (u.roles.includes("USER")) {
           setRole("USER");

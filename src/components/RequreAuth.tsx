@@ -7,8 +7,8 @@ type RequireAuthTypes = {
   roles?: string[];
 };
 
-export const RequireAuth = ({ children, roles }: RequireAuthTypes) => {
-  const { user, loading } = useAuth();
+export const RequireAuth = async ({ children, roles }: RequireAuthTypes) => {
+  const { user, loading } = await useAuth();
 
   if (loading) {
     return (

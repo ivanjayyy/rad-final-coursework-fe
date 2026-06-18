@@ -11,7 +11,7 @@ function AdminLayout() {
 
       {/* Inside <main> is where Home, Products, etc., will swap in */}
       <main className="content-container">
-        <RequireAuth roles={["MODERATOR"]}>
+        <RequireAuth roles={["MODERATOR", "ADMIN"]}>
           <Outlet />
         </RequireAuth>
       </main>

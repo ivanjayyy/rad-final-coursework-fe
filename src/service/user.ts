@@ -5,19 +5,13 @@ export const updateUser = async (username: string, email: string) => {
   return response.data;
 };
 
-export const deleteUser = async (id: string) => {
-  const response = await api.delete(`/user/delete/${id}`);
+export const deleteAccount = async () => {
+  const response = await api.delete(`/user/delete`);
   return response.data;
 };
 
 export const getUser = async (id: string) => {
   const response = await api.get(`/user/${id}`);
-  return response.data;
-};
-
-export const getAllUsers = async () => {
-  const response = await api.get("/user/all");
-  console.log(response.data);
   return response.data;
 };
 

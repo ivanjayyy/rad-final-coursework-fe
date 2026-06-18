@@ -5,15 +5,34 @@ export const getDashboardStats = async () => {
   return response.data;
 };
 
-export const getAllUsersAdmin = async (page: number, limit: number) => {
-  const response = await api.get(
-    `/admin/get-users?page=${page}&limit=${limit}`,
-  );
+export const deletePost = async (id: string) => {
+  const response = await api.delete(`/admin/post/delete/${id}`);
   return response.data;
 };
 
-export const deleteUserAdmin = async (id: string) => {
-  const response = await api.delete(`/admin/delete-user/${id}`);
+export const deleteUser = async (id: string) => {
+  const response = await api.delete(`/admin/user/delete/${id}`);
+  return response.data;
+};
+
+export const getAllUsers = async () => {
+  const response = await api.get("/admin/user/all");
+  console.log(response.data);
+  return response.data;
+};
+
+export const allUsers = async () => {
+  const response = await api.get("/admin/all-users");
+  return response.data;
+};
+
+export const changeRole = async (id: string, role: string) => {
+  const response = await api.put(`/admin/user/${id}/role/${role}`);
+  return response.data;
+};
+
+export const sendEmail = async (email: string, subject: string, body: string) => {
+  const response = await api.post("/admin/send-email", { email, subject, body });
   return response.data;
 };
 

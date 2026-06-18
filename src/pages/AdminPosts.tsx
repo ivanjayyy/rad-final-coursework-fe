@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getAllPosts, deletePost } from "../service/post";
+import { getAllPosts } from "../service/post";
+import { deletePost } from "../service/admin";
 
 interface PetPost {
   _id: string;
@@ -375,7 +376,7 @@ const AdminPostsPage = () => {
       setPosts(adjustedData);
       setPage(pageNumber);
       setTotalPageCount(res?.pagination.totalPages || 0);
-      setTotalCount(res?.pagination.total || 0);
+      setTotalCount(res?.pagination.totalPosts || 0);
     } finally {
       setIsLoading(false);
     }
