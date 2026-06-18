@@ -14,12 +14,13 @@ const Register = () => {
   const [password, setPassword] = useState("");
   const [conPassword, setConPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [showConPassword, setShowConPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [passwordFocused, setPasswordFocused] = useState(false);
 
   const navigate = useNavigate();
+
+  const showConPassword = false;
 
   const passwordsMatch = conPassword.length > 0 && password === conPassword;
   const passwordsMismatch = conPassword.length > 0 && password !== conPassword;

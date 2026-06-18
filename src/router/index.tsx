@@ -11,7 +11,6 @@ const Login = lazy(() => import("../pages/Login"));
 const Profile = lazy(() => import("../pages/Profile"));
 const Start = lazy(() => import("../pages/Start"));
 const PostPage = lazy(() => import("../components/PostsPage"));
-const AddNewPost = lazy(() => import("../components/AddNewPost"));
 const MyPosts = lazy(() => import("../components/MyPostsPage"));
 const BookmarksPage = lazy(() => import("../pages/BookmarkPosts"));
 const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
