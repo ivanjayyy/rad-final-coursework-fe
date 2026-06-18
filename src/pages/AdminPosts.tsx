@@ -13,6 +13,13 @@ interface PetPost {
   contactPhone: string[] | string;
   contactEmail: string[] | string;
   imageURL?: string;
+  // Updated author property to include profilePic
+  author: {
+    _id: string;
+    username: string;
+    email: string;
+    profilePic?: string;
+  };
 }
 
 const parseContactList = (data: any): string[] => {
@@ -38,91 +45,70 @@ const DeleteConfirmModal = ({
   isDeleting: boolean;
 }) => (
   <div
-    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
     onClick={(e) => {
       if (e.target === e.currentTarget) onCancel();
     }}
   >
-    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6 flex flex-col gap-5">
+    <div className="bg-white border-4 border-black rounded-none shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] w-full max-w-sm p-6 flex flex-col gap-5 transform rotate-[-1deg]">
       <div className="flex items-start gap-4">
-        <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+        <div className="w-12 h-12 rounded-none border-4 border-black bg-red-400 flex items-center justify-center shrink-0 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-red-600"
+            className="h-6 w-6 text-black"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
-            strokeWidth={2}
+            strokeWidth={3}
           >
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              path="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
             />
           </svg>
         </div>
         <div>
-          <h3 className="text-base font-bold text-gray-900">
+          <h3 className="text-xl font-black uppercase tracking-tight text-gray-900">
             Delete this post?
           </h3>
-          <p className="text-sm text-gray-500 mt-1">
-            <span className="font-medium text-gray-700 capitalize">
+          <p className="text-sm font-bold text-gray-700 mt-2">
+            <span className="bg-yellow-300 px-1 border border-black font-extrabold capitalize">
               {post.petName || "This post"}
             </span>{" "}
-            will be permanently removed. This action cannot be undone.
+            will be permanently wiped out! This cannot be undone!
           </p>
         </div>
       </div>
-      <div className="flex gap-3 justify-end">
+      <div className="flex gap-3 justify-end mt-2">
         <button
           onClick={onCancel}
           disabled={isDeleting}
-          className="px-4 py-2 text-sm font-medium border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-50 transition"
+          className="px-4 py-2 text-sm font-black border-4 border-black rounded-none bg-white hover:bg-gray-100 active:translate-x-0.5 active:translate-y-0.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all disabled:opacity-50"
         >
-          Cancel
+          CANCEL
         </button>
         <button
           onClick={onConfirm}
           disabled={isDeleting}
-          className="px-4 py-2 text-sm font-semibold bg-red-600 hover:bg-red-700 text-white rounded-lg disabled:opacity-50 transition flex items-center gap-2"
+          className="px-4 py-2 text-sm font-black border-4 border-black rounded-none bg-red-500 text-white hover:bg-red-600 active:translate-x-0.5 active:translate-y-0.5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none transition-all disabled:opacity-50 flex items-center gap-2"
         >
-          {isDeleting && (
-            <svg
-              className="animate-spin h-3.5 w-3.5"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                className="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                strokeWidth="4"
-              />
-              <path
-                className="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8v8H4z"
-              />
-            </svg>
-          )}
-          {isDeleting ? "Deleting…" : "Yes, delete"}
+          {isDeleting ? "DELETING..." : "YES, DELETE!"}
         </button>
       </div>
     </div>
   </div>
 );
 
-// ── Post Detail Drawer ────────────────────────────────────────────────────────
-const PostDetailDrawer = ({
+// ── Unified Post & User Detail Modal ──────────────────────────────────────────
+const UnifiedDetailModal = ({
   post,
   onClose,
 }: {
   post: PetPost;
   onClose: () => void;
 }) => {
+  const [view, setView] = useState<"POST" | "USER">("POST");
   const parsedPhones = parseContactList(post.contactPhone);
   const parsedEmails = parseContactList(post.contactEmail);
   const isLost = post.status === "LOST";
@@ -137,18 +123,20 @@ const PostDetailDrawer = ({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-fade-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
       }}
     >
-      <div className="bg-white w-full max-w-md h-full flex flex-col shadow-2xl overflow-y-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 sticky top-0 bg-white z-10">
-          <h2 className="text-base font-bold text-gray-900">Post Details</h2>
+      <div className="bg-white border-4 border-black w-full max-w-lg shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Header Block */}
+        <div className="flex items-center justify-between px-6 py-4 border-b-4 border-black bg-purple-400">
+          <h2 className="text-xl font-black uppercase tracking-wider text-black">
+            {view === "POST" ? "💥 Post Details 💥" : "👤 Submitter Profile 👤"}
+          </h2>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition"
+            className="p-1 border-2 border-black rounded-none bg-white text-black hover:bg-yellow-300 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -156,7 +144,7 @@ const PostDetailDrawer = ({
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              strokeWidth={2}
+              strokeWidth={3}
             >
               <path
                 strokeLinecap="round"
@@ -167,144 +155,181 @@ const PostDetailDrawer = ({
           </button>
         </div>
 
-        {/* Image */}
-        <div className="bg-gray-100 flex items-center justify-center w-full">
-          <img
-            src={
-              post.imageURL ||
-              "https://via.placeholder.com/600x400?text=No+Image"
-            }
-            alt={post.petName || "Pet"}
-            className="w-full object-contain max-h-64"
-          />
-        </div>
+        <div className="overflow-y-auto flex-1 p-6 space-y-6">
+          {view === "POST" ? (
+            <>
+              {/* Pet Media Frame */}
+              <div className="border-4 border-black shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] bg-amber-100 relative max-h-64 overflow-hidden flex items-center justify-center">
+                <img
+                  src={
+                    post.imageURL ||
+                    "https://via.placeholder.com/600x400?text=No+Image"
+                  }
+                  alt={post.petName || "Pet"}
+                  className="w-full object-cover h-64"
+                />
+                {/* Embedded Submitter Button */}
+                <div className="absolute bottom-3 left-3">
+                  <button
+                    onClick={() => setView("USER")}
+                    className="px-3 py-1.5 text-xs font-black border-2 border-black rounded-none bg-cyan-300 text-black hover:bg-cyan-400 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all flex items-center gap-1"
+                  >
+                    <span>By: @{post.author.username || "UnknownUser"}</span>
+                    <span className="text-sm">👉</span>
+                  </button>
+                </div>
+              </div>
 
-        {/* Content */}
-        <div className="p-6 flex flex-col gap-5">
-          {/* Title & status */}
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-bold text-gray-900 capitalize">
-                {post.petName || "Unnamed Pet"}
-              </h3>
-              <span className="text-xs font-mono text-gray-400">
-                ID: {post._id}
-              </span>
-            </div>
-            <div className="flex flex-col items-end gap-1.5 shrink-0">
-              <span
-                className={`text-xs font-bold tracking-widest uppercase px-2.5 py-1 rounded-full ${isLost ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-600"}`}
+              {/* Identity Row */}
+              <div className="flex items-start justify-between gap-4 border-b-4 border-dashed border-black pb-4">
+                <div>
+                  <h3 className="text-3xl font-black uppercase text-black tracking-tight drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]">
+                    {post.petName || "Unnamed Pet"}
+                  </h3>
+                  <span className="inline-block mt-1 font-mono text-xs font-bold bg-gray-200 border border-black px-1">
+                    ID: {post._id}
+                  </span>
+                </div>
+                <div className="flex flex-col items-end gap-2 shrink-0">
+                  <span
+                    className={`text-sm font-black uppercase tracking-widest px-3 py-1 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] ${isLost ? "bg-red-400 text-black" : "bg-emerald-400 text-black"}`}
+                  >
+                    {post.status}
+                  </span>
+                  {post.reward && (
+                    <span className="text-xs font-black bg-yellow-300 text-black px-3 py-1 border-2 border-black shadow-[3px_3px_0px_0px_rgba(0,0,0,1)]">
+                      💰 ${post.reward}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              {/* Spec Grid */}
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: "🕵️‍♂️ Breed", value: post.breed },
+                  { label: "🎨 Color", value: post.color },
+                  {
+                    label: "📅 Last Seen Date",
+                    value: post.lastSeenDate
+                      ? new Date(post.lastSeenDate).toLocaleDateString(
+                          "en-US",
+                          {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          },
+                        )
+                      : undefined,
+                  },
+                  {
+                    label: "🏆 Reward Status",
+                    value: post.reward ? `$${post.reward}` : "No Reward",
+                  },
+                ].map(({ label, value }) => (
+                  <div
+                    key={label}
+                    className="border-2 border-black p-2 bg-slate-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]"
+                  >
+                    <p className="text-xs font-black uppercase tracking-wider text-purple-600">
+                      {label}
+                    </p>
+                    <p className="text-base font-extrabold text-black mt-0.5">
+                      {value || "—"}
+                    </p>
+                  </div>
+                ))}
+                <div className="col-span-2 border-2 border-black p-3 bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                  <p className="text-xs font-black uppercase tracking-wider text-red-500">
+                    📍 Last Seen Location
+                  </p>
+                  <p className="text-base font-extrabold text-black mt-0.5">
+                    {post.lastSeenLocation || "—"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Direct Post Contact Options */}
+              <div className="border-t-4 border-black pt-4 space-y-2">
+                <p className="text-xs font-black uppercase tracking-wider text-black">
+                  📞 Broadcast Contacts
+                </p>
+                <div className="flex flex-col gap-2">
+                  {parsedPhones.map((phone, i) => (
+                    <a
+                      key={i}
+                      href={`tel:${phone}`}
+                      className="w-fit text-sm font-bold border border-black bg-white px-2 py-1 hover:bg-purple-100 underline decoration-2 text-blue-600"
+                    >
+                      📞 {phone}
+                    </a>
+                  ))}
+                  {parsedEmails.map((email, i) => (
+                    <a
+                      key={i}
+                      href={`mailto:${email}`}
+                      className="w-fit text-sm font-bold border border-black bg-white px-2 py-1 hover:bg-purple-100 underline decoration-2 text-blue-600 break-all"
+                    >
+                      ✉️ {email}
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* User Detail View Section - UPDATED TO SHOW PROFILE PIC AND REMOVE ID */
+            <div className="space-y-6 py-2 animate-fade-in">
+              {/* Back Button */}
+              <button
+                onClick={() => setView("POST")}
+                className="px-3 py-1.5 text-xs font-black border-2 border-black rounded-none bg-yellow-300 text-black hover:bg-yellow-400 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all flex items-center gap-1"
               >
-                {post.status}
-              </span>
-              {post.reward && (
-                <span className="text-xs font-bold bg-amber-100 text-amber-700 px-2.5 py-1 rounded-full">
-                  🏆 ${post.reward}
-                </span>
-              )}
+                ⬅️ BACK TO POST
+              </button>
+
+              <div className="border-4 border-black p-6 bg-cyan-50 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] space-y-5">
+                {/* Profile Pic Display with Initials Fallback */}
+                <div>
+                  <label className="text-xs font-black uppercase tracking-wider text-gray-500 block mb-2">
+                    Profile Picture
+                  </label>
+                  <div className="w-24 h-24 bg-purple-300 border-4 border-black overflow-hidden flex items-center justify-center font-black text-3xl shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+                    {post.author.profilePic ? (
+                      <img
+                        src={post.author.profilePic}
+                        alt={post.author.username}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          // Falls back to initials if image URL fails
+                          e.currentTarget.style.display = "none";
+                        }}
+                      />
+                    ) : (
+                      (post.author.username || "U").slice(0, 2).toUpperCase()
+                    )}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-xs font-black uppercase tracking-wider text-gray-500">
+                    Account Handle
+                  </label>
+                  <p className="text-2xl font-black text-black">
+                    @{post.author.username || "Unknown_User"}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="text-xs font-black uppercase tracking-wider text-gray-500">
+                    Verified Email Address
+                  </label>
+                  <p className="text-base font-extrabold text-black bg-white border-2 border-black p-2 shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] break-all">
+                    {post.author.email || "No registered email available"}
+                  </p>
+                </div>
+              </div>
             </div>
-          </div>
-
-          {/* Details */}
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            {[
-              { label: "Breed", value: post.breed },
-              { label: "Color", value: post.color },
-              {
-                label: "Last Seen Date",
-                value: post.lastSeenDate
-                  ? new Date(post.lastSeenDate).toLocaleDateString("en-US", {
-                      month: "long",
-                      day: "numeric",
-                      year: "numeric",
-                    })
-                  : undefined,
-              },
-              {
-                label: "Reward",
-                value: post.reward ? `$${post.reward}` : "None",
-              },
-            ].map(({ label, value }) => (
-              <div key={label}>
-                <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-                  {label}
-                </p>
-                <p className="font-medium text-gray-800 mt-0.5">
-                  {value || "—"}
-                </p>
-              </div>
-            ))}
-            <div className="col-span-2">
-              <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-                Last Seen Location
-              </p>
-              <p className="font-medium text-gray-800 mt-0.5">
-                {post.lastSeenLocation || "—"}
-              </p>
-            </div>
-          </div>
-
-          <div className="border-t border-gray-100" />
-
-          {/* Contact */}
-          <div className="space-y-2">
-            <p className="text-[10px] font-semibold uppercase tracking-wider text-gray-400">
-              Contact
-            </p>
-            {parsedPhones.map((phone, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3.5 w-3.5 text-gray-400 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                  />
-                </svg>
-                <a
-                  href={`tel:${phone}`}
-                  className="text-blue-600 hover:underline font-medium"
-                >
-                  {phone}
-                </a>
-              </div>
-            ))}
-            {parsedEmails.map((email, i) => (
-              <div key={i} className="flex items-center gap-2 text-sm">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-3.5 w-3.5 text-gray-400 shrink-0"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-                <a
-                  href={`mailto:${email}`}
-                  className="text-blue-600 hover:underline font-medium break-all"
-                >
-                  {email}
-                </a>
-              </div>
-            ))}
-            {parsedPhones.length === 0 && parsedEmails.length === 0 && (
-              <p className="text-xs text-gray-400 italic">
-                No contact info provided.
-              </p>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>
@@ -330,7 +355,24 @@ const AdminPostsPage = () => {
     setIsLoading(true);
     try {
       const res = await getAllPosts(pageNumber, 10);
-      setPosts(res?.data || []);
+      // Injected mock placeholders inside the fetch layout mapping logic for testing data properties
+      const adjustedData = (res?.data || []).map((p: any) => ({
+        ...p,
+        author: {
+          _id:
+            p.author?._id ||
+            p.userId ||
+            "usr_" + Math.random().toString(36).substr(2, 9),
+          username:
+            p.author?.username || p.username || "HeroFinder_" + p.petName,
+          email:
+            p.author?.email ||
+            p.userEmail ||
+            `${p.petName || "user"}@comicmail.com`,
+          profilePic: p.author?.profilePic || undefined, // Map from your API architecture response if exists
+        },
+      }));
+      setPosts(adjustedData);
       setPage(pageNumber);
       setTotalPageCount(res?.pagination.totalPages || 0);
       setTotalCount(res?.pagination.total || 0);
@@ -376,86 +418,77 @@ const AdminPostsPage = () => {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 font-sans antialiased text-gray-900">
-      {/* Page Header */}
-      <div className="bg-white border-b border-gray-200 px-6 py-5">
-        <div className="max-w-7xl mx-auto flex items-center justify-between gap-4 flex-wrap">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900 tracking-tight">
-              Post Management
-            </h1>
-            <p className="text-sm text-gray-500 mt-0.5">
-              {isLoading ? "Loading…" : `${totalCount} total posts`}
-            </p>
+    <div className="min-h-screen bg-amber-50 font-sans antialiased text-black p-4 md:p-8">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Comic Banner Page Header */}
+        <div className="bg-yellow-400 border-4 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden transform rotate-[-0.5deg]">
+          <div className="absolute top-0 right-0 bg-red-500 text-white text-xs font-black px-4 py-1 uppercase tracking-widest border-b-4 border-l-4 border-black">
+            Admin HQ
           </div>
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <h1 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-black drop-shadow-[2px_2px_0px_rgba(255,255,255,1)]">
+                💥 Post Management 💥
+              </h1>
+              <p className="text-sm font-black text-black mt-1 bg-white/70 px-2 py-0.5 border border-black inline-block">
+                {isLoading
+                  ? "LOADING DOSSIERS…"
+                  : `${totalCount} CRITICAL POSTS ON FILE`}
+              </p>
+            </div>
 
-          {/* Stats chips */}
-          <div className="flex gap-2 flex-wrap">
-            {[
-              {
-                label: "All",
-                value: "ALL",
-                color: "bg-gray-100 text-gray-700 border-gray-200",
-              },
-              {
-                label: "Lost",
-                value: "LOST",
-                color: "bg-red-50 text-red-700 border-red-200",
-              },
-              {
-                label: "Found",
-                value: "FOUND",
-                color: "bg-emerald-50 text-emerald-700 border-emerald-200",
-              },
-            ].map((f) => (
-              <button
-                key={f.value}
-                onClick={() => setStatusFilter(f.value as any)}
-                className={`px-3 py-1.5 text-xs font-semibold rounded-lg border transition ${f.color} ${statusFilter === f.value ? "ring-2 ring-offset-1 ring-blue-400" : "opacity-70 hover:opacity-100"}`}
-              >
-                {f.label}
-              </button>
-            ))}
+            {/* Filter Toggle Buttons */}
+            <div className="flex gap-2 flex-wrap">
+              {[
+                {
+                  label: "SHOW ALL",
+                  value: "ALL",
+                  color: "bg-white text-black",
+                },
+                {
+                  label: "🔴 LOST",
+                  value: "LOST",
+                  color: "bg-red-400 text-black",
+                },
+                {
+                  label: "🟢 FOUND",
+                  value: "FOUND",
+                  color: "bg-emerald-400 text-black",
+                },
+              ].map((f) => (
+                <button
+                  key={f.value}
+                  onClick={() => setStatusFilter(f.value as any)}
+                  className={`px-3 py-2 text-xs font-black border-2 border-black transition-all shadow-[3px_3px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none ${f.color} ${statusFilter === f.value ? "bg-cyan-300 ring-2 ring-black" : "opacity-90"}`}
+                >
+                  {f.label}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col gap-4">
-        {/* Search bar */}
+        {/* Action Controls Frame */}
         <div className="relative max-w-sm">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            strokeWidth={2}
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-            />
-          </svg>
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="Search by name, breed, location, ID…"
-            className="w-full pl-9 pr-4 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+            placeholder="SEARCH DATABASE BY NAME, BREED, ID..."
+            className="w-full pl-4 pr-10 py-2.5 text-sm font-bold border-4 border-black rounded-none bg-white text-black focus:outline-none focus:bg-yellow-50 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] placeholder-gray-500 transition-all"
           />
           {search && (
             <button
               onClick={() => setSearch("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-black hover:text-red-500 transition"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-3.5 w-3.5"
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                strokeWidth={2}
+                strokeWidth={3}
               >
                 <path
                   strokeLinecap="round"
@@ -467,205 +500,156 @@ const AdminPostsPage = () => {
           )}
         </div>
 
-        {/* Loading skeleton */}
+        {/* Data Loading Block */}
         {isLoading && (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            {[...Array(5)].map((_, i) => (
+          <div className="border-4 border-black bg-white divide-y-4 divide-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+            {[...Array(4)].map((_, i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 px-6 py-4 border-b border-gray-100 last:border-0 animate-pulse"
+                className="flex items-center gap-4 px-6 py-5 animate-pulse"
               >
-                <div className="w-12 h-12 bg-gray-200 rounded-lg shrink-0" />
-                <div className="flex-1 flex flex-col gap-2">
-                  <div className="h-3.5 bg-gray-200 rounded w-1/3" />
-                  <div className="h-3 bg-gray-100 rounded w-1/2" />
+                <div className="w-14 h-14 bg-gray-300 border-2 border-black shrink-0" />
+                <div className="flex-1 space-y-2">
+                  <div className="h-4 bg-gray-300 border border-black w-1/4" />
+                  <div className="h-3 bg-gray-200 border border-black w-1/2" />
                 </div>
-                <div className="h-6 w-16 bg-gray-200 rounded-full" />
-                <div className="h-8 w-8 bg-gray-200 rounded-lg" />
               </div>
             ))}
           </div>
         )}
 
-        {/* Empty state */}
+        {/* Empty Search Result Terminal */}
         {!isLoading && filteredPosts.length === 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 flex flex-col items-center justify-center py-20 text-center">
-            <div className="w-12 h-12 bg-gray-100 rounded-full flex items-center justify-center mb-3">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6 text-gray-400"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                />
-              </svg>
+          <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] flex flex-col items-center justify-center py-16 text-center">
+            <div className="w-14 h-14 bg-red-100 border-2 border-black flex items-center justify-center mb-4 transform rotate-12">
+              <span className="text-2xl font-black">?</span>
             </div>
-            <p className="text-gray-500 font-medium text-sm">No posts found</p>
-            {search && (
-              <p className="text-gray-400 text-xs mt-1">
-                Try a different search term.
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Table */}
-        {!isLoading && filteredPosts.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
-            {/* Table header */}
-            <div className="hidden md:grid grid-cols-[48px_1fr_120px_160px_100px_80px_56px] items-center gap-4 px-6 py-3 border-b border-gray-100 bg-gray-50">
-              <div />
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Pet
-              </p>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Status
-              </p>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Location
-              </p>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Date
-              </p>
-              <p className="text-[11px] font-semibold uppercase tracking-wider text-gray-400">
-                Reward
-              </p>
-              <div />
-            </div>
-
-            {/* Rows */}
-            {filteredPosts.map((post, index) => {
-              const isLost = post.status === "LOST";
-              return (
-                <div
-                  key={post._id || index}
-                  className="flex md:grid md:grid-cols-[48px_1fr_120px_160px_100px_80px_56px] items-center gap-4 px-6 py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50 transition-colors"
-                >
-                  {/* Thumbnail */}
-                  <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 shrink-0">
-                    <img
-                      src={
-                        post.imageURL || "https://via.placeholder.com/48?text=?"
-                      }
-                      alt={post.petName}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-
-                  {/* Name + ID */}
-                  <div className="flex-1 min-w-0">
-                    <button
-                      onClick={() => setSelectedPost(post)}
-                      className="text-left group"
-                    >
-                      <p className="text-sm font-semibold text-gray-900 capitalize truncate group-hover:text-blue-600 transition-colors">
-                        {post.petName || "Unnamed"}
-                      </p>
-                      <p className="text-xs text-gray-400 font-mono truncate">
-                        {post.breed || "—"} · #{post._id.slice(-6)}
-                      </p>
-                    </button>
-                  </div>
-
-                  {/* Status */}
-                  <div className="hidden md:block">
-                    <span
-                      className={`inline-flex text-xs font-bold tracking-wider uppercase px-2.5 py-1 rounded-full ${isLost ? "bg-red-100 text-red-600" : "bg-emerald-100 text-emerald-700"}`}
-                    >
-                      {post.status}
-                    </span>
-                  </div>
-
-                  {/* Location */}
-                  <p className="hidden md:block text-sm text-gray-600 truncate">
-                    {post.lastSeenLocation || "—"}
-                  </p>
-
-                  {/* Date */}
-                  <p className="hidden md:block text-sm text-gray-600 whitespace-nowrap">
-                    {post.lastSeenDate
-                      ? new Date(post.lastSeenDate).toLocaleDateString(
-                          "en-US",
-                          { month: "short", day: "numeric", year: "numeric" },
-                        )
-                      : "—"}
-                  </p>
-
-                  {/* Reward */}
-                  <p className="hidden md:block text-sm font-medium text-amber-600">
-                    {post.reward ? (
-                      `$${post.reward}`
-                    ) : (
-                      <span className="text-gray-400 font-normal">—</span>
-                    )}
-                  </p>
-
-                  {/* Delete */}
-                  <div className="shrink-0 ml-auto md:ml-0">
-                    <button
-                      onClick={() => setPostToDelete(post)}
-                      className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                      title="Delete post"
-                    >
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        className="h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                        stroke="currentColor"
-                        strokeWidth={2}
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        )}
-
-        {/* Pagination */}
-        {!isLoading && totalPageCount > 1 && (
-          <div className="flex items-center justify-between gap-4 pt-2">
-            <p className="text-sm text-gray-500">
-              Page <span className="font-semibold text-gray-700">{page}</span>{" "}
-              of{" "}
-              <span className="font-semibold text-gray-700">
-                {totalPageCount}
-              </span>
+            <p className="text-xl font-black uppercase text-black">
+              No Records Match the Search Filter
             </p>
-            <div className="flex items-center gap-1">
+          </div>
+        )}
+
+        {/* Comic Table Grid View */}
+        {!isLoading && filteredPosts.length > 0 && (
+          <div className="bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] overflow-hidden">
+            {/* Headers Desktop */}
+            <div className="hidden md:grid grid-cols-[64px_1fr_130px_180px_120px_70px] items-center gap-4 px-6 py-3 border-b-4 border-black bg-purple-300 font-black uppercase tracking-wider text-sm">
+              <div />
+              <p>Pet Profile</p>
+              <p>Alert Status</p>
+              <p>Last Spotting</p>
+              <p>Bounty Reward</p>
+              <div />
+            </div>
+
+            {/* List Components */}
+            <div className="divide-y-4 divide-black">
+              {filteredPosts.map((post, index) => {
+                const isLost = post.status === "LOST";
+                return (
+                  <div
+                    key={post._id || index}
+                    className="flex flex-col md:grid md:grid-cols-[64px_1fr_130px_180px_120px_70px] items-start md:items-center gap-3 md:gap-4 px-6 py-4 hover:bg-cyan-50/50 transition-colors bg-white"
+                  >
+                    {/* Thumbnail box */}
+                    <div className="w-14 h-14 border-2 border-black overflow-hidden bg-gray-100 shrink-0 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">
+                      <img
+                        src={
+                          post.imageURL ||
+                          "https://via.placeholder.com/48?text=?"
+                        }
+                        alt={post.petName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+
+                    {/* Meta Field Clicker */}
+                    <div className="min-w-0 flex-1">
+                      <button
+                        onClick={() => setSelectedPost(post)}
+                        className="text-left block group"
+                      >
+                        <p className="text-lg font-black text-black capitalize group-hover:text-purple-700 group-hover:underline decoration-2 transition-all">
+                          {post.petName || "Unnamed Case"}
+                        </p>
+                        <p className="text-xs font-bold text-gray-600 font-mono mt-0.5">
+                          {post.breed || "Unspecified Breed"} · #
+                          {post._id.slice(-6).toUpperCase()}
+                        </p>
+                      </button>
+                    </div>
+
+                    {/* Dynamic Badging Status */}
+                    <div>
+                      <span
+                        className={`inline-block text-xs font-black tracking-wider uppercase px-2.5 py-1 border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${isLost ? "bg-red-400 text-black" : "bg-emerald-400 text-black"}`}
+                      >
+                        {post.status}
+                      </span>
+                    </div>
+
+                    {/* Geolocation String */}
+                    <p className="text-sm font-extrabold text-gray-800 truncate max-w-xs md:max-w-none">
+                      📍 {post.lastSeenLocation || "—"}
+                    </p>
+
+                    {/* Bounty Figure Info */}
+                    <p className="text-sm font-black text-amber-600">
+                      {post.reward ? (
+                        `💵 $${post.reward}`
+                      ) : (
+                        <span className="text-gray-400 font-normal">—</span>
+                      )}
+                    </p>
+
+                    {/* Delete Function Button */}
+                    <div className="ml-auto md:ml-0 pt-2 md:pt-0">
+                      <button
+                        onClick={() => setPostToDelete(post)}
+                        className="p-2 border-2 border-black bg-white text-black hover:bg-red-500 hover:text-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                        title="Delete post entry"
+                      >
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-4 w-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2.5}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Bottom Paging Control Panels */}
+        {!isLoading && totalPageCount > 1 && (
+          <div className="flex items-center justify-between gap-4 pt-2 flex-wrap bg-white border-4 border-black p-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">
+            <p className="text-sm font-black uppercase text-black">
+              Page{" "}
+              <span className="bg-yellow-300 px-1.5 border border-black">
+                {page}
+              </span>{" "}
+              of {totalPageCount}
+            </p>
+            <div className="flex items-center gap-2">
               <button
                 onClick={() => fetchData(page - 1)}
                 disabled={page <= 1}
-                className="flex items-center gap-1 px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="px-3 py-1.5 text-xs font-black border-2 border-black bg-white hover:bg-gray-100 disabled:opacity-40 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all flex items-center gap-1"
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-                Prev
+                ◀ PREV
               </button>
 
               {Array.from({ length: totalPageCount }, (_, i) => i + 1).map(
@@ -673,11 +657,7 @@ const AdminPostsPage = () => {
                   <button
                     key={p}
                     onClick={() => fetchData(p)}
-                    className={`w-9 h-9 text-sm font-medium rounded-lg transition ${
-                      p === page
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "bg-white border border-gray-300 text-gray-600 hover:bg-gray-50"
-                    }`}
+                    className={`w-8 h-8 text-xs font-black border-2 border-black transition-all shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] ${p === page ? "bg-purple-400 text-black shadow-none translate-x-0.5 translate-y-0.5" : "bg-white text-black hover:bg-gray-50"}`}
                   >
                     {p}
                   </button>
@@ -687,38 +667,24 @@ const AdminPostsPage = () => {
               <button
                 onClick={() => fetchData(page + 1)}
                 disabled={page >= totalPageCount}
-                className="flex items-center gap-1 px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
+                className="px-3 py-1.5 text-xs font-black border-2 border-black bg-white hover:bg-gray-100 disabled:opacity-40 shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all flex items-center gap-1"
               >
-                Next
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
+                NEXT ▶
               </button>
             </div>
           </div>
         )}
       </div>
 
-      {/* Post Detail Drawer */}
+      {/* Unified Context Details Modal Popup Panel */}
       {selectedPost && (
-        <PostDetailDrawer
+        <UnifiedDetailModal
           post={selectedPost}
           onClose={() => setSelectedPost(null)}
         />
       )}
 
-      {/* Delete Confirm Modal */}
+      {/* Confirmation Framework Popup */}
       {postToDelete && (
         <DeleteConfirmModal
           post={postToDelete}

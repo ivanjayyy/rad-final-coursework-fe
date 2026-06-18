@@ -1,12 +1,12 @@
 import api from "./api";
 
-export const updateUser = async (username: string, email: string, location: string) => {
-  const response = await api.put("/user/update", { username, email, location });
+export const updateUser = async (username: string, email: string) => {
+  const response = await api.put("/user/update", { username, email });
   return response.data;
 };
 
-export const deleteUser = async () => {
-  const response = await api.delete("/user/delete");
+export const deleteUser = async (id: string) => {
+  const response = await api.delete(`/user/delete/${id}`);
   return response.data;
 };
 
@@ -17,6 +17,7 @@ export const getUser = async (id: string) => {
 
 export const getAllUsers = async () => {
   const response = await api.get("/user/all");
+  console.log(response.data);
   return response.data;
 };
 
@@ -27,5 +28,16 @@ export const sendEmailOtp = async (email: string) => {
 
 export const verifyEmailOtp = async (email: string, otp: string) => {
   const response = await api.post("/mail/verify-otp", { email, otp });
+  return response.data;
+};
+
+export const changeProfileImage = async (file: File) => {
+  const formData = new FormData();
+  formData.append("image", file);
+  const response = await api.put("/user/profile-pic", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
   return response.data;
 };

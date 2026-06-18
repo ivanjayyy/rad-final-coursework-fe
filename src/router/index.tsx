@@ -1,6 +1,8 @@
 import { lazy, Suspense } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import "leaflet/dist/leaflet.css";
+import MainLayout from "../layouts/MainLayout";
+import AdminLayout from "../layouts/AdminLayout";
 
 // pages
 const Home = lazy(() => import("../pages/Home"));
@@ -8,13 +10,14 @@ const Register = lazy(() => import("../pages/Register"));
 const Login = lazy(() => import("../pages/Login"));
 const Profile = lazy(() => import("../pages/Profile"));
 const Start = lazy(() => import("../pages/Start"));
-// const Posts = lazy(() => import("../components/Posts"));
+const PostPage = lazy(() => import("../components/PostsPage"));
 const AddNewPost = lazy(() => import("../components/AddNewPost"));
 const MyPosts = lazy(() => import("../components/MyPostsPage"));
 const BookmarksPage = lazy(() => import("../pages/BookmarkPosts"));
 const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
 const AdminPostsPage = lazy(() => import("../pages/AdminPosts"));
 const ForgotPassword = lazy(() => import("../pages/ForgetPassword"));
+const AdminUsersPage = lazy(() => import("../pages/UserManage"));
 
 // router
 const Router = () => {
@@ -28,21 +31,25 @@ const Router = () => {
         }
       >
         <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/posts" element={<PostPage />} />
+            <Route path="/bookmarks" element={<BookmarksPage />} />
+            <Route path="/my-posts" element={<MyPosts />} />
+            <Route path="/profile" element={<Profile />} />
+          </Route>
+
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/posts" element={<AdminPostsPage />} />
+            <Route path="/admin/users" element={<AdminUsersPage />} />
+            <Route path="/admin/profile" element={<Profile />} />
+          </Route>
+
           <Route path="/" element={<Start />} />
-          {/* <Route path="/create" element={<AddNewPost />} /> */}
-          <Route path="/posts" element={<Home />} />
+          <Route path="/home" element={<Home />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/my-posts" element={<MyPosts />} />
-          <Route path="/bookmarks" element={<BookmarksPage />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} />
-          <Route path="/admin/posts" element={<AdminPostsPage />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
-          {/* <Route path="/bookmarks" element={<Bookmarks />} />
-          <Route path="/posts-manage" element={<PostsManage />} />
-          <Route path="/user-manage" element={<UserManage />} />
-          <Route path="/admin-dashboard" element={<AdminDashboard />} /> */}
         </Routes>
       </Suspense>
     </BrowserRouter>

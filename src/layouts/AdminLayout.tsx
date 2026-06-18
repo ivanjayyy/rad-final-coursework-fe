@@ -1,17 +1,17 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../components/Navbar";
+import AdminNavbar from "../components/AdminNavbar";
 import { RequireAuth } from "../components/RequreAuth";
 // import Footer from "../components/Footer"; // Optional
 
-function MainLayout() {
+function AdminLayout() {
   return (
     <div className="app-layout">
       {/* Navbar stays fixed at the top */}
-      <Navbar />
+      <AdminNavbar />
 
       {/* Inside <main> is where Home, Products, etc., will swap in */}
       <main className="content-container">
-        <RequireAuth roles={["USER"]}>
+        <RequireAuth roles={["MODERATOR"]}>
           <Outlet />
         </RequireAuth>
       </main>
@@ -21,4 +21,4 @@ function MainLayout() {
   );
 }
 
-export default MainLayout;
+export default AdminLayout;
