@@ -3,7 +3,7 @@ import { refreshTokenCall } from "./auth";
 
 // create axios instance
 const api = axios.create({
-  baseURL: "http://localhost:5000/api/v1",
+  baseURL: "https://rad-final-coursework-be-ynt7.vercel.app/api/v1",
 });
 
 // public endpoints
