@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }: any) => {
 
   useEffect(() => {
     const token = localStorage.getItem("accessToken");
+
     if (token) {
       setLoading(true);
       getMyDetails()
@@ -21,13 +22,16 @@ export const AuthProvider = ({ children }: any) => {
           setUser(null);
         })
         .finally(() => {
+          // This safely turns off loading ONLY after the API responds
           setLoading(false);
         });
     } else {
       setUser(null);
+      // Safely turns off loading if there is no token to begin with
       setLoading(false);
     }
-    setLoading(false);
+
+    // ❌ REMOVED the duplicate setLoading(false) from here!
   }, []);
 
   return (
