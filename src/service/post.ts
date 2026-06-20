@@ -50,7 +50,9 @@ export const getBookmarkPosts = async (page: number, limit: number) => {
   return response.data;
 };
 
-export const getFlyer = async (id: string) => {
-  const response = await api.get(`/post/flyer/${id}`);
-  return response.data;
+export const getFlyer = (id: string): void => {
+  window.open(
+    `https://rad-final-coursework-be-ynt7.vercel.app/api/v1/post/flyer/${id}`,
+    "_blank",
+  );
 };
