@@ -31,7 +31,6 @@ export const AuthProvider = ({ children }: any) => {
       setLoading(false);
     }
 
-    // ❌ REMOVED the duplicate setLoading(false) from here!
   }, []);
 
   return (

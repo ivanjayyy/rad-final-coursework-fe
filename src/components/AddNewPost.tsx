@@ -51,6 +51,10 @@ interface NominatimResponse {
   address: AddressDetails;
 }
 
+interface AddPostProps {
+  onPostAdded?: () => void;
+}
+
 // Comic Book Design System Tokens
 const inputClass =
   "w-full px-3 py-2 text-sm font-bold border-4 border-black rounded-none bg-white text-black placeholder-gray-500 focus:outline-none focus:bg-yellow-50 focus:ring-0 transition shadow-[2px_2px_0px_0px_#000]";
@@ -58,7 +62,7 @@ const inputClass =
 const labelClass =
   "block text-xs font-black text-black uppercase tracking-wider mb-1 bg-yellow-300 border-2 border-black inline-block px-2 py-0.5 shadow-[2px_2px_0px_0px_#000]";
 
-const AddPost: React.FC = () => {
+const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
   const [postType, setPostType] = useState<string>("LOST");
   const [petName, setPetName] = useState<string>("");
   const [breed, setBreed] = useState<string>("");
@@ -195,11 +199,29 @@ const AddPost: React.FC = () => {
     try {
       await createPost(formData);
       alert("POST PUBLISHED TO THE UNIVERSE!");
+
+      if (onPostAdded) onPostAdded();
+
+      clearForm();
     } catch (error) {
       console.error("Error creating post:", error);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const clearForm = () => {
+    setPostType("LOST");
+    setPetName("");
+    setBreed("");
+    setColor("");
+    setLocation("");
+    setDate("");
+    setReward("");
+    setPhones([""]);
+    setEmails([""]);
+    setImage(null);
+    setImagePreview(null);
   };
 
   return (

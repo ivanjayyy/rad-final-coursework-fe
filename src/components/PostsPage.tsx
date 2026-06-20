@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-// import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import { getAllPosts, addBookmark } from "../service/post";
 import AddPost from "./AddNewPost";
 
@@ -15,6 +15,7 @@ interface PetPost {
   contactPhone: string[] | string;
   contactEmail: string[] | string;
   imageURL?: string;
+  bookmark?: string[];
 }
 
 const parseContactList = (data: any): string[] => {
@@ -203,6 +204,9 @@ const DetailField = ({ label, value }: { label: string; value?: string }) => (
 
 // ── Main Page ────────────────────────────────────────────────────────────────
 const PostPage = () => {
+  const { user } = useAuth();
+  const currentUserId = user?.id || user?._id;
+
   const [posts, setPosts] = useState<PetPost[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PetPost | null>(null);
@@ -237,12 +241,23 @@ const PostPage = () => {
 
   const fetchData = async () => {
     const res = await getAllPosts(1, 200);
-    setPosts(res?.data || []);
+    const fetchedPosts: PetPost[] = res?.data || [];
+    setPosts(fetchedPosts);
+
+    if (currentUserId) {
+      const initialBookmarked = new Set<string>();
+      fetchedPosts.forEach((post) => {
+        if (post.bookmark?.includes(currentUserId)) {
+          initialBookmarked.add(post._id);
+        }
+      });
+      setBookmarked(initialBookmarked);
+    }
   };
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentUserId]);
 
   useEffect(() => {
     document.body.style.overflow =
@@ -694,7 +709,12 @@ const PostPage = () => {
               </button>
             </div>
             <div className="overflow-y-auto p-6 bg-white">
-              <AddPost />
+              <AddPost
+                onPostAdded={() => {
+                  fetchData(); // Refetches the backend data cleanly
+                  setIsAddModalOpen(false); // Automatically closes the modal for a smooth UX
+                }}
+              />
             </div>
           </div>
         </div>

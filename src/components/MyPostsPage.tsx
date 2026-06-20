@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getMyPosts, deletePost } from "../service/post";
-import AddPost from "./AddNewPost";
+// Added getFlyer to the service imports
+import { getMyPosts, deletePost, getFlyer } from "../service/post";
 import UpdatePost from "./UpdatePost.tsx";
 
 interface PetPost {
@@ -333,7 +333,6 @@ const MyPostsPage = () => {
   const [filteredPosts, setFilteredPosts] = useState<PetPost[]>([]);
   const [page, setPage] = useState(1);
   const [totalPageCount, setTotalPageCount] = useState(0);
-  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [selectedPost, setSelectedPost] = useState<PetPost | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [postToUpdate, setPostToUpdate] = useState<PetPost | null>(null);
@@ -348,7 +347,7 @@ const MyPostsPage = () => {
   const fetchData = async (pageNumber = 1) => {
     setIsLoading(true);
     try {
-      const res = await getMyPosts(pageNumber, 6); // Fetches a larger block for custom client filters if needed
+      const res = await getMyPosts(pageNumber, 6);
       setPosts(res?.data || []);
       setPage(pageNumber);
       setTotalPageCount(res?.pagination.totalPages || 0);
@@ -361,7 +360,6 @@ const MyPostsPage = () => {
     fetchData();
   }, []);
 
-  // Sync and Filter posts client-side based on Comic Mode criteria
   useEffect(() => {
     if (statusFilter === "ALL") {
       setFilteredPosts(posts);
@@ -382,19 +380,26 @@ const MyPostsPage = () => {
     }
   };
 
+  // ── Flyer Stream Trigger Handler ───────────────────────────────────────────
+  const handleGenerateFlyer = async (postId: string) => {
+    try {
+      // Calls your post.ts service function with the postId parameter
+      await getFlyer(postId);
+    } catch (error) {
+      console.error("Failed to route to flyer generator view:", error);
+    }
+  };
+
   useEffect(() => {
     document.body.style.overflow =
-      isAddModalOpen || selectedPost || postToUpdate || postToDelete
-        ? "hidden"
-        : "";
+      selectedPost || postToUpdate || postToDelete ? "hidden" : "";
     return () => {
       document.body.style.overflow = "";
     };
-  }, [isAddModalOpen, selectedPost, postToUpdate, postToDelete]);
+  }, [selectedPost, postToUpdate, postToDelete]);
 
   return (
     <div className="min-h-screen bg-yellow-50/40 font-sans antialiased text-gray-900 pb-24">
-      {/* Dynamic Comic Filter Bar instead of Corporate Header */}
       <div className="max-w-7xl mx-auto px-6 pt-8 pb-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-4 border-black bg-cyan-300 p-4 rounded-xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)]">
           <div className="flex items-center gap-3">
@@ -403,7 +408,6 @@ const MyPostsPage = () => {
             </h1>
           </div>
 
-          {/* Filters configuration setup */}
           <div className="flex items-center gap-2 self-stretch sm:self-auto">
             <span className="text-xs font-black uppercase text-black hidden md:inline">
               Filter Box:
@@ -428,7 +432,6 @@ const MyPostsPage = () => {
       </div>
 
       <div className="max-w-7xl mx-auto px-6 py-4">
-        {/* Loading skeleton */}
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[1, 2, 3].map((i) => (
@@ -447,7 +450,6 @@ const MyPostsPage = () => {
           </div>
         )}
 
-        {/* Empty State */}
         {!isLoading && filteredPosts.length === 0 && (
           <div className="flex flex-col items-center justify-center py-20 text-center border-4 border-dashed border-black rounded-2xl bg-white p-8 max-w-xl mx-auto shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] mt-8">
             <div className="w-16 h-16 bg-rose-300 border-2 border-black rounded-xl flex items-center justify-center mb-4 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transform rotate-3">
@@ -475,7 +477,6 @@ const MyPostsPage = () => {
           </div>
         )}
 
-        {/* Posts Grid */}
         {!isLoading && filteredPosts.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {filteredPosts.map((post: PetPost, index) => {
@@ -486,8 +487,34 @@ const MyPostsPage = () => {
                   className="group relative bg-white border-4 border-black rounded-xl overflow-hidden flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all duration-200 cursor-pointer"
                   onClick={() => setSelectedPost(post)}
                 >
-                  {/* Action buttons (Persistent and styled with bold Comic accents) */}
+                  {/* Action Buttons Row Panel */}
                   <div className="absolute top-3 right-3 z-10 flex gap-2">
+                    {/* NEW: Flyer Render Action Button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation(); // Prevents details modal layout from firing
+                        handleGenerateFlyer(post._id);
+                      }}
+                      className="flex items-center justify-center bg-purple-300 hover:bg-purple-400 text-black border-2 border-black rounded-lg shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] p-2 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none transition-all"
+                      title="Generate Professional PDF Flyer"
+                      aria-label="Generate flyer"
+                    >
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                        strokeWidth={2.5}
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                        />
+                      </svg>
+                    </button>
+
                     <button
                       onClick={(e) => {
                         e.stopPropagation();
@@ -536,7 +563,6 @@ const MyPostsPage = () => {
                     </button>
                   </div>
 
-                  {/* Image Container with Pop-Art Bordering */}
                   <div className="relative bg-amber-50 aspect-video w-full overflow-hidden border-b-4 border-black">
                     <img
                       src={
@@ -562,7 +588,6 @@ const MyPostsPage = () => {
                     )}
                   </div>
 
-                  {/* Body Content */}
                   <div className="p-5 flex flex-col gap-2.5 bg-white flex-grow">
                     <div className="flex items-center justify-between gap-2">
                       <h2 className="text-xl font-black text-black uppercase tracking-tight truncate max-w-[75%]">
@@ -624,7 +649,6 @@ const MyPostsPage = () => {
           </div>
         )}
 
-        {/* Comic Style Pagination */}
         {!isLoading && totalPageCount > 1 && (
           <div className="flex items-center justify-center gap-3 mt-12">
             <button
@@ -664,74 +688,6 @@ const MyPostsPage = () => {
         )}
       </div>
 
-      {/* Persistent Floating Action Button - Bottom Right Corner */}
-      <button
-        onClick={() => setIsAddModalOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2 bg-yellow-400 hover:bg-yellow-500 text-black text-sm font-black uppercase tracking-wider px-5 py-3 border-4 border-black rounded-xl shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] active:translate-x-1 active:translate-y-1 active:shadow-none hover:-translate-y-0.5 transition-all duration-150"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 stroke-[3]"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M12 4v16m8-8H4"
-          />
-        </svg>
-        <span>Add Post</span>
-      </button>
-
-      {/* Add Post Modal */}
-      {isAddModalOpen && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={(e) => {
-            if (e.target === e.currentTarget) setIsAddModalOpen(false);
-          }}
-        >
-          <div className="relative bg-white border-4 border-black shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] rounded-xl w-full max-w-2xl max-h-[90vh] flex flex-col">
-            <div className="flex items-center justify-between px-6 py-4 border-b-4 border-black bg-cyan-300">
-              <div>
-                <h2 className="text-xl font-black text-black uppercase tracking-tight">
-                  Add New Post
-                </h2>
-                <p className="text-xs text-gray-800 font-bold mt-0.5">
-                  Fill in the details to report a lost or found pet
-                </p>
-              </div>
-              <button
-                onClick={() => setIsAddModalOpen(false)}
-                className="text-black hover:bg-rose-400 transition-colors p-1.5 border-2 border-black rounded-lg bg-white shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]"
-                aria-label="Close modal"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-              </button>
-            </div>
-            <div className="overflow-y-auto p-6 bg-white">
-              <AddPost />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Post Detail Modal */}
       {selectedPost && (
         <PostDetailModal
           post={selectedPost}
@@ -739,7 +695,6 @@ const MyPostsPage = () => {
         />
       )}
 
-      {/* Update Post Modal */}
       {postToUpdate && (
         <UpdatePostModal
           post={postToUpdate}
@@ -750,7 +705,6 @@ const MyPostsPage = () => {
         />
       )}
 
-      {/* Delete Confirm Modal */}
       {postToDelete && (
         <DeleteConfirmModal
           post={postToDelete}
@@ -764,4 +718,3 @@ const MyPostsPage = () => {
 };
 
 export default MyPostsPage;
-

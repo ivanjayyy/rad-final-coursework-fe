@@ -267,7 +267,11 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post, onSuccess }) => {
       if (em.trim()) formData.append("contactEmail", em.trim().toLowerCase());
     });
 
-    if (image) formData.append("image", image);
+    if (image) {
+      formData.append("image", image);
+    } else if (post.imageURL) {
+      formData.append("image", post.imageURL);
+    }
 
     try {
       await updatePost(post._id, formData);
