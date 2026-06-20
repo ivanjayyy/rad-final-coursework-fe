@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import AdminNavbar from "../components/AdminNavbar";
-import { RequireAuth } from "../components/RequreAuth";
+import { RequireAuth } from "../components/RequireAuth";
 // import Footer from "../components/Footer"; // Optional
 
 function AdminLayout() {

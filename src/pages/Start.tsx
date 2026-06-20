@@ -1,8 +1,8 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
-const Start = () => {
-  const user = useAuth().user;
+const Start = async () => {
+  const user = await useAuth().user;
 
   if (!user) {
     return <Navigate to="/home" replace />;
