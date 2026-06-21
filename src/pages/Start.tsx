@@ -21,7 +21,7 @@ const Start = () => {
   }
 
   if (user?.roles.includes("MODERATOR")) {
-    return <Navigate to="/admin/posts" replace />;
+    return <Navigate to="/admin/dashboard" replace />;
   }
 
   if (user?.roles.includes("USER")) {
