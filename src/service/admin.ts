@@ -39,11 +39,6 @@ export const sendEmail = async (
   return response.data;
 };
 
-export const toggleBanUserAdmin = async (id: string) => {
-  const response = await api.put(`/admin/ban-user/${id}/ban`);
-  return response.data;
-};
-
 export const getDashboardSummary = async () => {
   const response = await api.get("/admin/dashboard-summary");
   return response.data;
