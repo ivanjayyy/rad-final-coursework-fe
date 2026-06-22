@@ -197,14 +197,19 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
     if (image) formData.append("image", image);
 
     try {
-      await createPost(formData);
+      const res = await createPost(formData);
       alert("POST PUBLISHED TO THE UNIVERSE!");
 
+      console.log(res.message);
       if (onPostAdded) onPostAdded();
 
       clearForm();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error creating post:", error);
+
+      const err = error.response?.data?.error || "Something went wrong!";
+      const reason = error.response?.data?.reason || "Unknown reason.";
+      alert(`${err} (${reason})`);
     } finally {
       setIsSubmitting(false);
     }

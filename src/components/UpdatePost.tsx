@@ -274,10 +274,18 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post, onSuccess }) => {
     }
 
     try {
-      await updatePost(post._id, formData);
+      const res = await updatePost(post._id, formData);
       onSuccess?.();
-    } catch (error) {
+
+      alert("POST UPDATED!");
+      console.log(res.message);
+    } catch (error: any) {
       console.error("Error updating post:", error);
+
+      const err = error.response?.data?.error;
+      const reason = error.response?.data?.reason;
+
+      alert(`${err}: ${reason}`);
     } finally {
       setIsSubmitting(false);
     }
