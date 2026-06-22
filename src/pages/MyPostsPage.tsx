@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 // Added getFlyer to the service imports
 import { getMyPosts, deletePost, getFlyer } from "../service/post";
-import UpdatePost from "./UpdatePost.tsx";
+import UpdatePost from "../components/UpdatePost";
 
 interface PetPost {
   _id: string;
