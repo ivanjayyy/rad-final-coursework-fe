@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
-import { getAllPosts, addBookmark } from "../service/post";
+import { getAllPosts, addBookmark, removeBookmark } from "../service/post";
 import AddPost from "./AddNewPost";
 
 interface PetPost {
@@ -228,10 +228,22 @@ const PostPage = () => {
   const handleBookmark = async (e: React.MouseEvent, postId: string) => {
     e.stopPropagation();
     if (bookmarking === postId) return;
+
+    const isCurrentlyBookmarked = bookmarked.has(postId);
     setBookmarking(postId);
+
     try {
-      await addBookmark(postId);
-      setBookmarked((prev) => new Set(prev).add(postId));
+      if (isCurrentlyBookmarked) {
+        await removeBookmark(postId);
+        setBookmarked((prev) => {
+          const next = new Set(prev);
+          next.delete(postId);
+          return next;
+        });
+      } else {
+        await addBookmark(postId);
+        setBookmarked((prev) => new Set(prev).add(postId));
+      }
     } catch (error) {
       console.error("Failed to bookmark post:", error);
     } finally {
@@ -479,7 +491,9 @@ const PostPage = () => {
                 {/* Comic Style Bookmark Ribbon */}
                 <button
                   onClick={(e) => handleBookmark(e, post._id)}
-                  title={bookmarked.has(post._id) ? "Bookmarked" : "Save post"}
+                  title={
+                    bookmarked.has(post._id) ? "Remove bookmark" : "Save post"
+                  }
                   className={`absolute -top-3 -right-3 z-20 p-3 rounded-none border-4 border-slate-950 transition-all active:scale-90 shadow-[3px_3px_0px_0px_rgba(2,6,23,1)]
                     ${
                       bookmarked.has(post._id)
