@@ -23,8 +23,6 @@ PawLink provides a centralized platform where users can:
 
 # 📸 Application Screenshots
 
-> Replace the images below with your actual screenshots stored inside `/docs/screenshots`.
-
 ## 🏠 Landing Page
 
 ![Landing Page](docs/screenshots/landing-page.png)
@@ -40,7 +38,7 @@ PawLink provides a centralized platform where users can:
 
 ## 🐕 Lost Pets Page
 
-![Lost Pets](docs/screenshots/lost-pets-page.png)
+![Lost/Found Pets](docs/screenshots/posts-page.png)
 
 **Show:**
 
@@ -51,8 +49,6 @@ PawLink provides a centralized platform where users can:
 ---
 
 ## 🐾 Found Pets Page
-
-![Found Pets](docs/screenshots/found-pets-page.png)
 
 **Show:**
 
@@ -145,7 +141,7 @@ PawLink provides a centralized platform where users can:
 
 ## 🛡️ Moderator Dashboard
 
-![Moderator Dashboard](docs/screenshots/moderator-dashboard.png)
+![Moderator Dashboard](docs/screenshots/posts-management.png)
 
 **Show:**
 
