@@ -30,29 +30,18 @@ PawLink provides a centralized platform where users can:
 **Show:**
 
 * Hero section
-* Navigation bar
-* Statistics section
 * Main CTA buttons
 
 ---
 
-## 🐕 Lost Pets Page
+## 🐾 Lost/Found Pets Page
 
 ![Lost/Found Pets](docs/screenshots/posts-page.png)
 
 **Show:**
 
-* Lost pet feed
+* Lost/Found pet feed
 * Search/filter area
-* Pet cards
-
----
-
-## 🐾 Found Pets Page
-
-**Show:**
-
-* Found pet listings
 * Pet information cards
 
 ---
@@ -139,14 +128,9 @@ PawLink provides a centralized platform where users can:
 
 ---
 
-## 🛡️ Moderator Dashboard
+## 🛡️ Posts Moderation
 
 ![Moderator Dashboard](docs/screenshots/posts-management.png)
-
-**Show:**
-
-* Moderator tools
-* Report management
 
 ---
 
