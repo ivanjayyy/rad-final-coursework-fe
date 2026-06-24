@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { updateUser, changeProfileImage } from "../service/user"; // Imported changeProfileImage
+import { updateUser, deleteAccount, changeProfileImage } from "../service/user"; // Imported changeProfileImage
 import { getMyDetails } from "../service/auth";
 import { alert } from "../utils/alerts";
 
@@ -140,6 +140,49 @@ const Profile = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
+  };
+
+  // ── Delete Account Handler ──────────────────────────────────────────────────
+  const handleDelete = async () => {
+    alert
+      .fire({
+        title: "ARE YOU ABSOLUTELY SURE?",
+        text: "THIS WILL PERMANENTLY WIPE YOUR PROFILE AND ALL YOUR LOST/FOUND PET REPORTS FROM PAWLINK HQ!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#ef4444", // Solid red
+        cancelButtonColor: "#000000", // Neo-brutalist black
+        confirmButtonText: "YES, WIPE MY ACCOUNT!",
+        cancelButtonText: "NO, STAY ON THE SQUAD",
+      })
+      .then(async (result) => {
+        if (result.isConfirmed) {
+          setLoading(true);
+          try {
+            await deleteAccount();
+
+            await alert.fire({
+              title: "ACCOUNT DELETED",
+              text: "Your PawLink credentials have been scrubbed from the registry.",
+              icon: "success",
+              confirmButtonText: "Dismiss",
+            });
+
+            navigate("/login");
+          } catch (error: any) {
+            console.error("Failed to delete account:", error);
+            const msg =
+              error.response?.data?.message || "Could not delete account.";
+            alert.fire({
+              title: "DELETION FAILED!",
+              text: msg,
+              icon: "error",
+              confirmButtonText: "Fix it",
+            });
+            setLoading(false);
+          }
+        }
+      });
   };
 
   // ── Loading ─────────────────────────────────────────────────────────────────
@@ -299,6 +342,17 @@ const Profile = () => {
               </button>
             </>
           )}
+        </div>
+
+        {/* ── Dangerous Zone Section ── */}
+        <div className="mt-4 pt-4 border-t-4 border-dashed border-black">
+          <button
+            onClick={handleDelete}
+            disabled={saving || uploadingImg}
+            className="w-full py-3 text-xs font-black text-white border-4 border-black bg-black hover:bg-red-600 hover:text-black transition uppercase shadow-[4px_4px_0px_0px_rgba(239,68,68,1)] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_0px_rgba(239,68,68,1)] disabled:opacity-50"
+          >
+            ⚠️ Danger Zone: Terminate PawLink Account
+          </button>
         </div>
       </div>
     </div>

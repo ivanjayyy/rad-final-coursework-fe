@@ -1,7 +1,8 @@
 import api from "./api";
 
 export const updateUser = async (username: string, email: string) => {
-  const response = await api.put("/user/update", { username, email });
+  const userData = { username, email };
+  const response = await api.put("/user/update", userData);
   return response.data;
 };
 
