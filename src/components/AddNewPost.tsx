@@ -18,6 +18,7 @@ import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { createPost } from "../service/post";
+import { alert } from "../utils/alerts";
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -198,7 +199,23 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
 
     try {
       const res = await createPost(formData);
-      alert("POST PUBLISHED TO THE UNIVERSE!");
+
+      // alert("POST PUBLISHED TO THE UNIVERSE!");
+      // alert.fire({
+      //   title: "Success!",
+      //   text: "POST PUBLISHED TO THE UNIVERSE!",
+      //   icon: "success",
+      //   confirmButtonText: "Cool",
+      // });
+      alert.fire({
+        title: "POST PUBLISHED TO THE UNIVERSE!",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
 
       console.log(res.message);
       if (onPostAdded) onPostAdded();
@@ -209,7 +226,13 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
 
       const err = error.response?.data?.error || "Something went wrong!";
       const reason = error.response?.data?.reason || "Unknown reason.";
-      alert(`${err} (${reason})`);
+      // alert(`${err} (${reason})`);
+      alert.fire({
+        title: `${err}`,
+        text: `${reason}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsSubmitting(false);
     }

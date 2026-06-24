@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 // Added getFlyer to the service imports
 import { getMyPosts, deletePost, getFlyer } from "../service/post";
 import UpdatePost from "../components/UpdatePost";
+import { alert } from "../utils/alerts";
 
 interface PetPost {
   _id: string;
@@ -351,6 +352,14 @@ const MyPostsPage = () => {
       setPosts(res?.data || []);
       setPage(pageNumber);
       setTotalPageCount(res?.pagination.totalPages || 0);
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -375,6 +384,24 @@ const MyPostsPage = () => {
       await deletePost(postToDelete._id);
       setPostToDelete(null);
       fetchData(page);
+
+      alert.fire({
+        title: "Post deleted successfully",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -387,6 +414,12 @@ const MyPostsPage = () => {
       await getFlyer(postId);
     } catch (error) {
       console.error("Failed to route to flyer generator view:", error);
+      alert.fire({
+        title: "ERROR!",
+        text: "Failed to route to flyer generator view",
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     }
   };
 

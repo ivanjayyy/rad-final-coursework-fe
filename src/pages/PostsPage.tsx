@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { getAllPosts, addBookmark, removeBookmark } from "../service/post";
 import AddPost from "../components/AddNewPost";
+import { alert } from "../utils/alerts";
 
 interface PetPost {
   _id: string;
@@ -240,30 +241,68 @@ const PostPage = () => {
           next.delete(postId);
           return next;
         });
+
+        alert.fire({
+          title: "Removed from bookmarks",
+          icon: "success",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
       } else {
         await addBookmark(postId);
         setBookmarked((prev) => new Set(prev).add(postId));
+
+        alert.fire({
+          title: "Bookmarked!",
+          icon: "success",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to bookmark post:", error);
+
+      const msg = error.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setBookmarking(null);
     }
   };
 
   const fetchData = async () => {
-    const res = await getAllPosts(1, 200);
-    const fetchedPosts: PetPost[] = res?.data || [];
-    setPosts(fetchedPosts);
+    try {
+      const res = await getAllPosts(1, 200);
+      const fetchedPosts: PetPost[] = res?.data || [];
+      setPosts(fetchedPosts);
 
-    if (currentUserId) {
-      const initialBookmarked = new Set<string>();
-      fetchedPosts.forEach((post) => {
-        if (post.bookmark?.includes(currentUserId)) {
-          initialBookmarked.add(post._id);
-        }
+      if (currentUserId) {
+        const initialBookmarked = new Set<string>();
+        fetchedPosts.forEach((post) => {
+          if (post.bookmark?.includes(currentUserId)) {
+            initialBookmarked.add(post._id);
+          }
+        });
+        setBookmarked(initialBookmarked);
+      }
+    } catch (error) {
+      console.error("Failed to fetch posts:", error);
+      alert.fire({
+        title: "ERROR!",
+        text: "Failed to fetch posts",
+        icon: "error",
+        confirmButtonText: "Fix it",
       });
-      setBookmarked(initialBookmarked);
     }
   };
 

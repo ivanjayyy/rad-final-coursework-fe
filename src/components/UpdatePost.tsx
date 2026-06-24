@@ -18,6 +18,7 @@ import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
 import { updatePost } from "../service/post";
+import { alert } from "../utils/alerts";
 
 let DefaultIcon = L.icon({
   iconUrl: icon,
@@ -277,7 +278,16 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post, onSuccess }) => {
       const res = await updatePost(post._id, formData);
       onSuccess?.();
 
-      alert("POST UPDATED!");
+      // alert("POST UPDATED!");
+      alert.fire({
+        title: "POST UPDATED!",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
       console.log(res.message);
     } catch (error: any) {
       console.error("Error updating post:", error);
@@ -285,7 +295,13 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post, onSuccess }) => {
       const err = error.response?.data?.error;
       const reason = error.response?.data?.reason;
 
-      alert(`${err}: ${reason}`);
+      // alert(`${err}: ${reason}`);
+      alert.fire({
+        title: `${err}`,
+        text: `${reason}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsSubmitting(false);
     }

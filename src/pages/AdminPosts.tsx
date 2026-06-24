@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { getAllPosts } from "../service/post";
 import { deletePost } from "../service/admin";
+import { alert } from "../utils/alerts";
 
 interface PetPost {
   _id: string;
@@ -377,6 +378,16 @@ const AdminPostsPage = () => {
       setPage(pageNumber);
       setTotalPageCount(res?.pagination.totalPages || 0);
       setTotalCount(res?.pagination.totalPosts || 0);
+    } catch (error: any) {
+      console.error(error);
+
+      const msg = error.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -400,6 +411,16 @@ const AdminPostsPage = () => {
       await deletePost(postToDelete._id);
       setPostToDelete(null);
       fetchData(page);
+    } catch (error: any) {
+      console.error(error);
+
+      const msg = error.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsDeleting(false);
     }

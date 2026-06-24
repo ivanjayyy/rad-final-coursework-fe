@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { getBookmarkPosts, removeBookmark } from "../service/post";
+import { alert } from "../utils/alerts";
 
 interface PetPost {
   _id: string;
@@ -234,6 +235,15 @@ const BookmarksPage = () => {
       setPosts(res?.data || []);
       setPage(pageNumber);
       setTotalPageCount(res?.pagination.totalPages || 0);
+    } catch (error: any) {
+      const msg = error.response?.data?.message || "Something went wrong!";
+
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -257,8 +267,27 @@ const BookmarksPage = () => {
     try {
       await removeBookmark(postId);
       setPosts((prev) => prev.filter((p) => p._id !== postId));
-    } catch (error) {
+
+      alert.fire({
+        title: "Removed from bookmarks",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } catch (error: any) {
       console.error("Failed to remove bookmark:", error);
+
+      const msg = error.response?.data?.message || "Something went wrong!";
+
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setRemoving(null);
     }

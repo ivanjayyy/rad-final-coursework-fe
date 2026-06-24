@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { updateUser, changeProfileImage } from "../service/user"; // Imported changeProfileImage
 import { getMyDetails } from "../service/auth";
+import { alert } from "../utils/alerts";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -75,8 +76,28 @@ const Profile = () => {
       // Update local state to preview the uploaded image instantly
       const localUrl = URL.createObjectURL(file);
       setProfilePic(localUrl);
-    } catch {
-      alert("Failed to upload image. Please try again.");
+
+      alert.fire({
+        title: "Image uploaded successfully",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } catch (error: any) {
+      // alert("Failed to upload image. Please try again.");
+      console.error("Failed to upload image:", error);
+
+      const msg = error.response?.data?.message || "Something went wrong!";
+
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setUploadingImg(false);
     }
@@ -93,8 +114,25 @@ const Profile = () => {
     try {
       await updateUser(username, email);
       setIsEditing(false);
-    } catch {
-      alert("Failed to save changes. Please try again.");
+
+      alert.fire({
+        title: "Profile updated successfully",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } catch (error: any) {
+      console.error("Failed to update profile:", error);
+      const msg = error.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setSaving(false);
     }

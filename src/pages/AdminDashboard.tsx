@@ -5,6 +5,7 @@ import {
   getPostVelocityMetrics,
   getCaseAllocations,
 } from "../service/admin";
+import { alert } from "../utils/alerts";
 
 interface DashboardSummary {
   totalUsers: number;
@@ -72,11 +73,19 @@ const AdminDashboard: React.FC = () => {
         // Process Real Graph Visualizations
         if (Array.isArray(velocityRes)) setVelocity(velocityRes);
         if (allocationRes) setAllocations(allocationRes);
-      } catch (err) {
+      } catch (err: any) {
         console.error(
           "Dashboard mainframe initialization failure sequence caught:",
           err,
         );
+
+        const msg = err.response?.data?.message || "Something went wrong!";
+        alert.fire({
+          title: "ERROR!",
+          text: `${msg}`,
+          icon: "error",
+          confirmButtonText: "Fix it",
+        });
       } finally {
         setIsLoading(false);
       }

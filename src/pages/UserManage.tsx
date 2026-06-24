@@ -7,6 +7,7 @@ import {
   sendEmail,
 } from "../service/admin";
 import { useAuth } from "../hooks/useAuth";
+import { alert } from "../utils/alerts";
 
 interface UserProfile {
   _id: string;
@@ -377,8 +378,16 @@ const AdminUsersPage = () => {
     try {
       await sendEmail(emailTargetUser.email, subject, body);
       setEmailTargetUser(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Transmission sequence failed to execute", err);
+
+      const msg = err.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsSendingEmail(false);
     }
@@ -390,8 +399,16 @@ const AdminUsersPage = () => {
       const res = isAdmin ? await allUsers() : await getAllUsers();
       const records = Array.isArray(res) ? res : res?.data || [];
       setUsers(records);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed executing user load sequence pipeline", err);
+
+      const msg = err.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -416,8 +433,26 @@ const AdminUsersPage = () => {
       await deleteUser(userToDelete._id);
       setUserToDelete(null);
       await fetchUsersList();
-    } catch (err) {
+
+      alert.fire({
+        title: "User deleted successfully",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } catch (err: any) {
       console.error("Purge operations crashed", err);
+
+      const msg = err.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     } finally {
       setIsDeleting(false);
     }
@@ -434,11 +469,29 @@ const AdminUsersPage = () => {
     try {
       await changeRole(user._id, newAssignedRole);
       await fetchUsersList();
-    } catch (err) {
+
+      alert.fire({
+        title: "Role updated successfully",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    } catch (err: any) {
       console.error(
         "Clearance authorization modification sequence terminated with errors",
         err,
       );
+
+      const msg = err.response?.data?.message || "Something went wrong!";
+      alert.fire({
+        title: "ERROR!",
+        text: `${msg}`,
+        icon: "error",
+        confirmButtonText: "Fix it",
+      });
     }
   };
 

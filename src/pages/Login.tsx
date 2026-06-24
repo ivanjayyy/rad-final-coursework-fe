@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { getMyDetails, login } from "../service/auth";
 import { useAuth } from "../hooks/useAuth";
+import { alert } from "../utils/alerts";
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -31,6 +32,17 @@ const Login = () => {
 
         const responseData = await getMyDetails();
         setUser(responseData?.data);
+
+        alert.fire({
+          title: "LOGIN SUCCESSFUL!",
+          icon: "success",
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+
         navigate("/");
       } else {
         setError("Login failed. Check credentials and try again.");

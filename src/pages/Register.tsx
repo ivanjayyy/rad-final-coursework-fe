@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { register } from "../service/auth";
+import { alert } from "../utils/alerts";
 
 const passwordRules = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },
@@ -47,6 +48,17 @@ const Register = () => {
     setIsLoading(true);
     try {
       await register(username.trim(), email.trim().toLowerCase(), password);
+
+      alert.fire({
+        title: "REGISTRATION SUCCESSFUL!",
+        icon: "success",
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+
       navigate("/login", { state: { registered: true } });
     } catch (err: any) {
       console.error(err);
