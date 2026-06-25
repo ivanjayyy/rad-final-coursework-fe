@@ -402,13 +402,13 @@ const AdminUsersPage = () => {
     } catch (err: any) {
       console.error("Failed executing user load sequence pipeline", err);
 
-      const msg = err.response?.data?.message || "Something went wrong!";
-      alert.fire({
-        title: "ERROR!",
-        text: `${msg}`,
-        icon: "error",
-        confirmButtonText: "Fix it",
-      });
+      // const msg = err.response?.data?.message || "Something went wrong!";
+      // alert.fire({
+      //   title: "ERROR!",
+      //   text: `${msg}`,
+      //   icon: "error",
+      //   confirmButtonText: "Fix it",
+      // });
     } finally {
       setIsLoading(false);
     }
