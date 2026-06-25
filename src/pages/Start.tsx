@@ -20,8 +20,12 @@ const Start = () => {
     return <Navigate to="/home" replace />;
   }
 
-  if (user?.roles.includes("MODERATOR")) {
+  if (user?.roles.includes("ADMIN")) {
     return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  if (user?.roles.includes("MODERATOR")) {
+    return <Navigate to="/admin/posts" replace />;
   }
 
   if (user?.roles.includes("USER")) {

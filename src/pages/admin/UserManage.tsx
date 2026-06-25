@@ -396,7 +396,7 @@ const AdminUsersPage = () => {
   const fetchUsersList = async () => {
     setIsLoading(true);
     try {
-      const res = isAdmin ? await allUsers() : await getAllUsers();
+      const res = !isAdmin ? await getAllUsers() : await allUsers();
       const records = Array.isArray(res) ? res : res?.data || [];
       setUsers(records);
     } catch (err: any) {
