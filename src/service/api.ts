@@ -1,12 +1,9 @@
 import axios, { AxiosError } from "axios";
 import { refreshTokenCall } from "./auth";
-import dotenv from "dotenv";
-
-dotenv.config();
 
 // create axios instance
 const api = axios.create({
-  baseURL: process.env.REACT_APP_API_URL,
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // public endpoints
