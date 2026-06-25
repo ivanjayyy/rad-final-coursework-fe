@@ -396,9 +396,15 @@ const AdminUsersPage = () => {
   const fetchUsersList = async () => {
     setIsLoading(true);
     try {
-      const res = !isAdmin ? await getAllUsers() : await allUsers();
-      const records = Array.isArray(res) ? res : res?.data || [];
-      setUsers(records);
+      if (isAdmin) {
+        const res = await allUsers();
+        const records = Array.isArray(res) ? res : res?.data || [];
+        setUsers(records);
+      } else {
+        const res = await getAllUsers();
+        const records = Array.isArray(res) ? res : res?.data || [];
+        setUsers(records);
+      }
     } catch (err: any) {
       console.error("Failed executing user load sequence pipeline", err);
 
