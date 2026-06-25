@@ -60,25 +60,29 @@ const AdminNavbar = () => {
   };
 
   const adminLinks = [
-    {
-      to: "/admin/dashboard",
-      label: "Dashboard",
-      icon: (
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          className="h-5 w-5 stroke-[2.5]"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"
-          />
-        </svg>
-      ),
-    },
+    ...(user?.roles.includes("ADMIN")
+      ? [
+          {
+            to: "/admin/dashboard",
+            label: "Dashboard",
+            icon: (
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-5 w-5 stroke-[2.5]"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"
+                />
+              </svg>
+            ),
+          },
+        ]
+      : []),
     {
       to: "/admin/posts",
       label: "Posts Manage",

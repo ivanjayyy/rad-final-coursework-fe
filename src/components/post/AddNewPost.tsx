@@ -298,7 +298,7 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
               value={petName}
               onChange={(e) => setPetName(e.target.value)}
               placeholder="e.g. Buddy"
-              required
+              // required
               className={inputClass}
             />
           </div>
@@ -478,7 +478,7 @@ const AddPost: React.FC<AddPostProps> = ({ onPostAdded }) => {
                   handleListChange(i, e.target.value, emails, setEmails)
                 }
                 placeholder={`Inbound Dispatch #${i + 1}`}
-                required={i === 0}
+                // required={i === 0}
                 className={inputClass}
               />
               {emails.length > 1 && (

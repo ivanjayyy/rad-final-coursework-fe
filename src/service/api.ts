@@ -1,9 +1,12 @@
 import axios, { AxiosError } from "axios";
 import { refreshTokenCall } from "./auth";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 // create axios instance
 const api = axios.create({
-  baseURL: "https://rad-final-coursework-be-ynt7.vercel.app/api/v1",
+  baseURL: process.env.REACT_APP_API_URL,
 });
 
 // public endpoints

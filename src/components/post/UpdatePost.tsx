@@ -351,7 +351,7 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post, onSuccess }) => {
               value={petName}
               onChange={(e) => setPetName(e.target.value)}
               placeholder="Buddy"
-              required
+              // required
               className={inputClass}
             />
           </div>
@@ -518,7 +518,7 @@ const UpdatePost: React.FC<UpdatePostProps> = ({ post, onSuccess }) => {
                   handleListChange(i, e.target.value, emails, setEmails)
                 }
                 placeholder={`Email #${i + 1}`}
-                required={i === 0}
+                // required={i === 0}
                 className={inputClass}
               />
               {emails.length > 1 && (
