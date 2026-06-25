@@ -346,9 +346,8 @@ const UserEmailModal = ({
 };
 
 // ── Admin User Management Page Layout Component ───────────────────────────────
-const AdminUsersPage = () => {
-  const { user } = useAuth();
-  // 💡 TODO: Hook these up to your real auth hook or slice (e.g., useAuth())
+const AdminUsersPage = async () => {
+  const { user } = await useAuth();
   const [currentUserRoles, setCurrentUserRoles] = useState<string[]>([]);
   const [currentUserId, setCurrentUserId] = useState<string>(
     "YOUR_LOGGED_IN_USER_ID",
