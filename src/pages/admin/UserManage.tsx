@@ -359,8 +359,7 @@ const AdminUsersPage = () => {
     setCurrentUserId(user.id);
   }, []);
 
-  const isAdmin = currentUserRoles.includes("ADMIN");
-  const isMod = currentUserRoles.includes("MODERATOR");
+  const isAdmin = currentUserRoles && currentUserRoles.includes("ADMIN");
 
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -397,14 +396,16 @@ const AdminUsersPage = () => {
   const fetchUsersList = async () => {
     setIsLoading(true);
     try {
-      if (isAdmin) {
-        const res = await allUsers();
-        const records = Array.isArray(res) ? res : res?.data || [];
-        setUsers(records);
-      } else if (isMod) {
+      if (!isAdmin) {
         const res = await getAllUsers();
         const records = Array.isArray(res) ? res : res?.data || [];
         setUsers(records);
+        return;
+      } else {
+        const res = await allUsers();
+        const records = Array.isArray(res) ? res : res?.data || [];
+        setUsers(records);
+        return;
       }
     } catch (err: any) {
       console.error("Failed executing user load sequence pipeline", err);

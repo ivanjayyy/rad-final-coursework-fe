@@ -12,7 +12,6 @@ export const deleteUser = async (id: string) => {
 
 export const getAllUsers = async () => {
   const response = await api.get("/admin/user/all");
-  console.log(response.data);
   return response.data;
 };
 
