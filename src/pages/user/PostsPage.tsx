@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useAuth } from "../hooks/useAuth";
-import { getAllPosts, addBookmark, removeBookmark } from "../service/post";
-import AddPost from "../components/AddNewPost";
-import { alert } from "../utils/alerts";
+import { useAuth } from "../../hooks/useAuth";
+import { getAllPosts, addBookmark, removeBookmark } from "../../service/post";
+import AddPost from "../../components/post/AddNewPost";
+import { alert } from "../../utils/alerts";
 
 interface PetPost {
   _id: string;

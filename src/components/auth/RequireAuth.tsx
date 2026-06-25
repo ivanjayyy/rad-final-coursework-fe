@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { Navigate } from "react-router-dom";
 
 type RequireAuthTypes = {

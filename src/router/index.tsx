@@ -5,18 +5,18 @@ import MainLayout from "../layouts/MainLayout";
 import AdminLayout from "../layouts/AdminLayout";
 
 // pages
-const Home = lazy(() => import("../pages/Home"));
-const Register = lazy(() => import("../pages/Register"));
-const Login = lazy(() => import("../pages/Login"));
-const Profile = lazy(() => import("../pages/Profile"));
+const Home = lazy(() => import("../pages/common/Home"));
+const Register = lazy(() => import("../pages/auth/Register"));
+const Login = lazy(() => import("../pages/auth/Login"));
+const Profile = lazy(() => import("../pages/common/Profile"));
 const Start = lazy(() => import("../pages/Start"));
-const PostPage = lazy(() => import("../pages/PostsPage"));
-const MyPosts = lazy(() => import("../pages/MyPostsPage"));
-const BookmarksPage = lazy(() => import("../pages/BookmarkPosts"));
-const AdminDashboard = lazy(() => import("../pages/AdminDashboard"));
-const AdminPostsPage = lazy(() => import("../pages/AdminPosts"));
-const ForgotPassword = lazy(() => import("../pages/ForgetPassword"));
-const AdminUsersPage = lazy(() => import("../pages/UserManage"));
+const PostPage = lazy(() => import("../pages/user/PostsPage"));
+const MyPosts = lazy(() => import("../pages/user/MyPostsPage"));
+const BookmarksPage = lazy(() => import("../pages/user/BookmarkPosts"));
+const AdminDashboard = lazy(() => import("../pages/admin/AdminDashboard"));
+const AdminPostsPage = lazy(() => import("../pages/admin/AdminPosts"));
+const ForgotPassword = lazy(() => import("../pages/auth/ForgetPassword"));
+const AdminUsersPage = lazy(() => import("../pages/admin/UserManage"));
 
 // router
 const Router = () => {

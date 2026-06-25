@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { updateUser, deleteAccount, changeProfileImage } from "../service/user"; // Imported changeProfileImage
-import { getMyDetails } from "../service/auth";
-import { alert } from "../utils/alerts";
+import { updateUser, deleteAccount, changeProfileImage } from "../../service/user"; // Imported changeProfileImage
+import { getMyDetails } from "../../service/auth";
+import { alert } from "../../utils/alerts";
 
 const Profile = () => {
   const navigate = useNavigate();

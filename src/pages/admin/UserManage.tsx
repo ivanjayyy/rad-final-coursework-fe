@@ -5,9 +5,9 @@ import {
   allUsers,
   changeRole,
   sendEmail,
-} from "../service/admin";
-import { useAuth } from "../hooks/useAuth";
-import { alert } from "../utils/alerts";
+} from "../../service/admin";
+import { useAuth } from "../../hooks/useAuth";
+import { alert } from "../../utils/alerts";
 
 interface UserProfile {
   _id: string;

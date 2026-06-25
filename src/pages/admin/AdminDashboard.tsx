@@ -4,8 +4,8 @@ import {
   getDashboardSummary,
   getPostVelocityMetrics,
   getCaseAllocations,
-} from "../service/admin";
-import { alert } from "../utils/alerts";
+} from "../../service/admin";
+import { alert } from "../../utils/alerts";
 
 interface DashboardSummary {
   totalUsers: number;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { getAllPosts } from "../service/post";
-import { deletePost } from "../service/admin";
-import { alert } from "../utils/alerts";
+import { getAllPosts } from "../../service/post";
+import { deletePost } from "../../service/admin";
+import { alert } from "../../utils/alerts";
 
 interface PetPost {
   _id: string;

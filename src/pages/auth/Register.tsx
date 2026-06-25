@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { register } from "../service/auth";
-import { alert } from "../utils/alerts";
+import { register } from "../../service/auth";
+import { alert } from "../../utils/alerts";
 
 const passwordRules = [
   { label: "At least 8 characters", test: (p: string) => p.length >= 8 },

@@ -17,8 +17,8 @@ import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import icon from "leaflet/dist/images/marker-icon.png";
 import iconShadow from "leaflet/dist/images/marker-shadow.png";
-import { createPost } from "../service/post";
-import { alert } from "../utils/alerts";
+import { createPost } from "../../service/post";
+import { alert } from "../../utils/alerts";
 
 let DefaultIcon = L.icon({
   iconUrl: icon,

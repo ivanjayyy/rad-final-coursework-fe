@@ -4,7 +4,7 @@ import {
   sendPasswordResetOtp,
   verifyPasswordResetOtp,
   resetPassword,
-} from "../service/auth";
+} from "../../service/auth";
 
 // ── COMIC OTP INPUT ───────────────────────────────────────────────────────────
 

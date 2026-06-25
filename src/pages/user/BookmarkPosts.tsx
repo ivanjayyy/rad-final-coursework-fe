@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { getBookmarkPosts, removeBookmark } from "../service/post";
-import { alert } from "../utils/alerts";
+import { getBookmarkPosts, removeBookmark } from "../../service/post";
+import { alert } from "../../utils/alerts";
 
 interface PetPost {
   _id: string;

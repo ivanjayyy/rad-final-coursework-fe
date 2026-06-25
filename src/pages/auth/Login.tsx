@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { getMyDetails, login } from "../service/auth";
-import { useAuth } from "../hooks/useAuth";
-import { alert } from "../utils/alerts";
+import { getMyDetails, login } from "../../service/auth";
+import { useAuth } from "../../hooks/useAuth";
+import { alert } from "../../utils/alerts";
 
 const Login = () => {
   const [username, setUsername] = useState("");
