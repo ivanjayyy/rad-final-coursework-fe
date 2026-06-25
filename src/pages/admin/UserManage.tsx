@@ -360,6 +360,7 @@ const AdminUsersPage = () => {
   }, []);
 
   const isAdmin = currentUserRoles.includes("ADMIN");
+  const isMod = currentUserRoles.includes("MODERATOR");
 
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -400,7 +401,7 @@ const AdminUsersPage = () => {
         const res = await allUsers();
         const records = Array.isArray(res) ? res : res?.data || [];
         setUsers(records);
-      } else {
+      } else if (isMod) {
         const res = await getAllUsers();
         const records = Array.isArray(res) ? res : res?.data || [];
         setUsers(records);
