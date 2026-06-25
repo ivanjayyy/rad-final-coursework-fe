@@ -349,7 +349,9 @@ const UserEmailModal = ({
 const AdminUsersPage = () => {
   const { user } = useAuth();
   // 💡 TODO: Hook these up to your real auth hook or slice (e.g., useAuth())
-  const [currentUserRoles, setCurrentUserRoles] = useState<string[]>(["ADMIN"]);
+  const [currentUserRoles, setCurrentUserRoles] = useState<string[]>([
+    "MODERATOR",
+  ]);
   const [currentUserId, setCurrentUserId] = useState<string>(
     "YOUR_LOGGED_IN_USER_ID",
   );
@@ -396,17 +398,9 @@ const AdminUsersPage = () => {
   const fetchUsersList = async () => {
     setIsLoading(true);
     try {
-      if (!isAdmin) {
-        const res = await getAllUsers();
-        const records = Array.isArray(res) ? res : res?.data || [];
-        setUsers(records);
-        return;
-      } else {
-        const res = await allUsers();
-        const records = Array.isArray(res) ? res : res?.data || [];
-        setUsers(records);
-        return;
-      }
+      const res = isAdmin ? await allUsers() : await getAllUsers();
+      const records = Array.isArray(res) ? res : res?.data || [];
+      setUsers(records);
     } catch (err: any) {
       console.error("Failed executing user load sequence pipeline", err);
 
